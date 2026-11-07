@@ -1,8 +1,8 @@
 // Edite a lista abaixo. Cada item vira um slide que passa sozinho.
 // img: caminho da imagem dentro da pasta img/ (deixe "" para ficar sem foto)
 var PATROCINADORES=[
-  {titulo:"Seu anúncio aqui",texto:"Anuncie sua marca para quem abastece na cidade.",img:"",whatsapp:"5586999999999",site:"https://exemplo.com"},
-  {titulo:"Patrocinador 2",texto:"Texto do segundo anúncio.",img:"",whatsapp:"",site:"https://exemplo.com"}
+  {titulo:"Seu anúncio aqui",texto:"Anuncie sua marca para quem abastece na cidade.",img:"img/teste1.svg",whatsapp:"5586999999999",site:"https://exemplo.com"},
+  {titulo:"Patrocinador 2",texto:"Texto do segundo anúncio.",img:"img/teste2.svg",whatsapp:"",site:"https://exemplo.com"}
 ];
 var INTERVALO=5000;
 (function(){
