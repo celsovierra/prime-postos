@@ -31,15 +31,25 @@ nav button{flex:1;background:none;border:0;padding:10px 0;color:var(--muted);fon
 nav button.on{color:var(--g);font-weight:700}
 nav span{display:block;font-size:1.3rem}
 .hide{display:none}
+.sel{display:flex;gap:8px;margin-top:10px}.sel select{flex:1;min-width:0}
+.ad{position:relative;background:#0b0b0b;color:#fff;border-radius:18px;overflow:hidden;margin-bottom:16px}
+.ad .slide{display:none}.ad .slide.on{display:block}
+.ad .img{height:150px;background:#1c1c1c center/cover no-repeat}
+.ad .body{padding:14px}.ad h3{margin:0 0 4px;font-size:1.1rem}.ad p{margin:0 0 12px;color:#c4c9d1;font-size:.88rem}
+.ad .btns{display:flex;gap:8px}.ad .btns a{flex:1;text-align:center;padding:10px;border-radius:99px;border:1px solid #fff;color:#fff;font-size:.85rem}
+.ad .btns a.w{background:#22c55e;border-color:#22c55e}
+.ad .lbl{position:absolute;top:10px;right:10px;background:#000a;color:#ccc;font-size:.65rem;padding:3px 8px;border-radius:6px;letter-spacing:.05em}
+.ad .dots{display:flex;justify-content:center;gap:6px;padding-bottom:10px}.ad .dots i{width:6px;height:6px;border-radius:50%;background:#555}.ad .dots i.on{background:#22c55e}
 </style>
 </head>
 <body>
 <header>
-<div class="top"><h1>prime <b>postos</b></h1><select id="city"></select></div>
+<div class="top"><h1>prime <b>postos</b></h1></div><div class="sel"><select id="uf"></select><select id="city"></select></div>
 <div class="chips" id="fuels"></div>
 </header>
 <main>
 <section id="tabMapa">
+<div class="ad" id="ads"></div>
 <h2>Postos próximos</h2>
 <div id="list"></div>
 </section>
@@ -53,59 +63,41 @@ nav span{display:block;font-size:1.3rem}
 <button data-t="tabPromo"><span>🏷️</span>Promoções</button>
 </nav>
 <script>
-// Dados de EXEMPLO. Troque por dados reais depois.
-// posto: [nome, bandeira, endereço, dLat, dLng, gasolina, etanol, diesel, gnv, promo]
-var CITIES={
-"Teresina, PI":{c:[-5.0892,-42.8019],s:[
-["Posto Centro","Rede A","Av. Frei Serafim",.004,.003,6.19,4.45,6.29,4.89,1],
-["Posto Ininga","Rede B","Av. Ininga",.02,.03,6.09,4.39,6.19,null,0],
-["Posto Dirceu","Rede C","Av. Pedro Almeida",-.03,.04,6.25,4.55,6.35,4.79,0],
-["Posto Norte","Rede A","Av. Duque de Caxias",.05,-.01,5.99,4.29,6.15,null,1],
-["Posto Marquês","Rede B","Av. Marquês de Paranaguá",-.01,-.02,6.15,4.49,6.25,4.85,0]],
-p:[["-R$ 0,10","Terça Promocional","Posto Centro"],["5% cashback","Acumule pontos no app","Posto Norte"],["Menor preço","Gasolina abaixo de R$ 6,00","Posto Norte"]]},
-"Fortaleza, CE":{c:[-3.7319,-38.5267],s:[
-["Posto Aldeota","Rede A","Av. Dom Luís",.01,.01,6.39,4.69,6.49,4.99,1],
-["Posto Meireles","Rede B","Av. Beira Mar",.015,.02,6.45,4.75,6.55,null,0],
-["Posto Messejana","Rede C","Av. Washington Soares",-.04,.03,6.19,4.49,6.29,4.79,0]],
-p:[["2x pontos","Pontos em dobro aos sábados","Posto Aldeota"]]},
-"São Luís, MA":{c:[-2.5307,-44.3068],s:[
-["Posto Renascença","Rede A","Av. Colares Moreira",.01,.015,6.49,4.85,6.59,null,0],
-["Posto Cohama","Rede B","Av. Jerônimo",.03,.01,6.35,4.7,6.45,null,1]],
-p:[["-R$ 0,05","Desconto na gasolina","Posto Cohama"]]},
-"Recife, PE":{c:[-8.0476,-34.877],s:[
-["Posto Boa Viagem","Rede A","Av. Boa Viagem",.02,.01,6.3,4.6,6.4,4.95,1],
-["Posto Boa Vista","Rede B","Rua da Aurora",.005,-.01,6.22,4.52,6.32,4.85,0]],
-p:[["GNV R$ 4,85","GNV econômico","Posto Boa Vista"]]}
-};
-var FUELS=[["Gasolina",5],["Etanol",6],["Diesel",7],["GNV",8]];
-var st={city:Object.keys(CITIES)[0],fuel:5,pos:null};
 var $=function(i){return document.getElementById(i)};
-function dist(a,b,c,d){var R=6371,r=Math.PI/180,x=(c-a)*r,y=(d-b)*r;
-var h=Math.sin(x/2)*Math.sin(x/2)+Math.cos(a*r)*Math.cos(c*r)*Math.sin(y/2)*Math.sin(y/2);
-return 2*R*Math.asin(Math.sqrt(h))}
+var API="https://servicodados.ibge.gov.br/api/v1/localidades/estados";
+var st={fuel:"gasolina",pos:null,rows:[]};
+var FUELS=[["Gasolina","gasolina"],["Etanol","etanol"],["Diesel","diesel"],["GNV","gnv"]];
+function opts(el,list,sel){el.innerHTML=list.map(function(x){return '<option value="'+x[0]+'"'+(x[0]===sel?' selected':'')+'>'+x[1]+'</option>'}).join("")}
+function loadUF(){fetch(API+"?orderBy=nome").then(function(r){return r.json()}).then(function(l){
+opts($("uf"),l.map(function(e){return [e.sigla,e.nome]}),"PI");loadCities()})}
+function loadCities(){$("city").innerHTML="<option>Carregando…</option>";
+fetch(API+"/"+$("uf").value+"/municipios?orderBy=nome").then(function(r){return r.json()}).then(function(l){
+opts($("city"),l.map(function(m){return [m.nome,m.nome]}),$("uf").value==="PI"?"Teresina":null);loadStations()})}
 function brl(v){return "R$ "+v.toFixed(2).replace(".",",")}
+function dist(a,b,c,d){var R=6371,r=Math.PI/180,x=(c-a)*r,y=(d-b)*r;var h=Math.sin(x/2)*Math.sin(x/2)+Math.cos(a*r)*Math.cos(c*r)*Math.sin(y/2)*Math.sin(y/2);return 2*R*Math.asin(Math.sqrt(h))}
+function loadStations(){
+var q=encodeURIComponent($("city").value+", "+$("uf").value);
+fetch("/api/stations?city="+q).then(function(r){return r.json()}).then(function(l){st.rows=l;render()}).catch(function(){st.rows=[];render()})}
 function render(){
-var C=CITIES[st.city],ref=st.pos||C.c;
-var rows=C.s.map(function(s){var la=C.c[0]+s[3],ln=C.c[1]+s[4];
-return{n:s[0],b:s[1],a:s[2],la:la,ln:ln,p:s[st.fuel],pr:s[9],d:dist(ref[0],ref[1],la,ln)}})
-.filter(function(r){return r.p!=null}).sort(function(a,b){return a.p-b.p});
+var f=st.fuel,fn=f.toUpperCase();
+var rows=st.rows.filter(function(s){return s.prices&&s.prices[f]!=null}).map(function(s){
+return{s:s,p:s.prices[f],d:st.pos?dist(st.pos[0],st.pos[1],s.lat,s.lng):null}}).sort(function(a,b){return a.p-b.p});
 var min=rows.length?rows[0].p:0;
-var fn=FUELS.filter(function(f){return f[1]===st.fuel})[0][0].toUpperCase();
-$("list").innerHTML=rows.length?rows.map(function(r){
-var u="https://www.google.com/maps/dir/?api=1&destination="+r.la+","+r.ln;
-return '<div class="card'+(r.p===min?' best':'')+'"><div class="ic">⛽</div><div class="inf"><div class="n">'+r.n+(r.pr?'<span class="tag">Promo</span>':'')+'</div><div class="s">'+r.a+' · '+r.b+' · '+r.d.toFixed(1).replace(".",",")+' km</div><a href="'+u+'" target="_blank" rel="noopener">Como chegar →</a></div><div class="pr"><small>'+fn+'</small><b>'+brl(r.p)+'</b></div></div>'}).join("")
-:'<p class="s">Nenhum posto com esse combustível.</p>';
-$("fuels").innerHTML=FUELS.map(function(f){return '<button class="chip'+(f[1]===st.fuel?' on':'')+'" data-f="'+f[1]+'">'+f[0]+'</button>'}).join("");
-$("promos").innerHTML=C.p.map(function(p){return '<div class="card"><span class="badge">'+p[0]+'</span><div class="inf"><div class="n">'+p[1]+'</div><div class="s">⛽ '+p[2]+'</div></div></div>'}).join("");
-}
-$("city").innerHTML=Object.keys(CITIES).map(function(c){return "<option>"+c+"</option>"}).join("");
-$("city").onchange=function(e){st.city=e.target.value;st.pos=null;render()};
-$("fuels").onclick=function(e){var f=e.target.getAttribute("data-f");if(f){st.fuel=+f;render()}};
+$("list").innerHTML=rows.length?rows.map(function(r){var s=r.s;
+var u="https://www.google.com/maps/dir/?api=1&destination="+s.lat+","+s.lng;
+return '<div class="card'+(r.p===min?' best':'')+'"><div class="ic">⛽</div><div class="inf"><div class="n">'+s.name+(s.promo?'<span class="tag">Promo</span>':'')+'</div><div class="s">'+s.address+' · '+s.brand+(r.d!=null?' · '+r.d.toFixed(1).replace(".",",")+' km':'')+'</div><a href="'+u+'" target="_blank" rel="noopener">Como chegar →</a></div><div class="pr"><small>'+fn+'</small><b>'+brl(r.p)+'</b></div></div>'}).join(""):'<p class="s">Nenhum posto cadastrado nesta cidade ainda.</p>';
+$("fuels").innerHTML=FUELS.map(function(x){return '<button class="chip'+(x[1]===f?' on':'')+'" data-f="'+x[1]+'">'+x[0]+'</button>'}).join("");
+var pr=st.rows.filter(function(s){return s.promo});
+$("promos").innerHTML=pr.length?pr.map(function(s){return '<div class="card"><span class="badge">Promo</span><div class="inf"><div class="n">'+s.name+'</div><div class="s">'+s.address+'</div></div></div>'}).join(""):'<p class="s">Sem promoções nesta cidade.</p>'}
+$("uf").onchange=loadCities;
+$("city").onchange=loadStations;
+$("fuels").onclick=function(e){var f=e.target.getAttribute("data-f");if(f){st.fuel=f;render()}};
 document.querySelector("nav").onclick=function(e){var b=e.target.closest("button");if(!b)return;
 document.querySelectorAll("nav button").forEach(function(x){x.className=x===b?"on":""});
 ["tabMapa","tabPromo"].forEach(function(t){$(t).className=t===b.getAttribute("data-t")?"":"hide"})};
 if(navigator.geolocation)navigator.geolocation.getCurrentPosition(function(p){st.pos=[p.coords.latitude,p.coords.longitude];render()},function(){});
-render();
+loadUF();
 </script>
+<script src="patrocinadores.js"></script>
 </body>
 </html>
