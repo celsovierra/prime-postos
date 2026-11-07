@@ -1,3 +1,7 @@
-node_modules
+*.bak*
+.env
 data.db
+index.html.complaca
+index.html.semfipe
+node_modules
 server.log

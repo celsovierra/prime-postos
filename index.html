@@ -51,21 +51,81 @@ nav span{display:block;font-size:1.3rem}
 .res{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:10px}
 .res .big{font-size:1.8rem;font-weight:800;color:var(--g);margin:2px 0 10px}
 .res dl{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0;font-size:.9rem}.res dt{color:var(--muted)}.res dd{margin:0;text-align:right;font-weight:600}
+.conta{background:#22c55e;color:#04210f;border:0;border-radius:99px;padding:8px 16px;font-weight:700;font-size:.85rem;cursor:pointer}
+.conta.on{background:#2a2f38;color:#fff}.conta small{color:#22c55e;margin-left:6px}
+#modal{position:fixed;inset:0;background:#000b;display:flex;align-items:center;justify-content:center;z-index:50;padding:16px}
+#modal.hide{display:none}
+.mbox{background:var(--card);color:var(--text);border-radius:18px;padding:20px;width:100%;max-width:360px}
+.mbox h2{margin:0 0 12px}.mbox input{width:100%;padding:12px;margin-bottom:10px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--text);font-size:1rem}
+.mbox .ok{width:100%;padding:12px;border:0;border-radius:12px;background:var(--g);color:var(--bg);font-weight:700;font-size:1rem;cursor:pointer}
+.mbox .lk{background:none;border:0;color:var(--g);font-weight:600;cursor:pointer;padding:10px 0 0;font-size:.9rem;display:block;width:100%}
+#mMsg{color:#e5484d;font-size:.85rem;margin:0 0 8px;min-height:1em}
+</style>
+<style>
+.tipoFipe{display:flex;gap:8px;margin-bottom:10px}
+.tipoFipe button{flex:1;padding:10px 6px;border-radius:12px;border:1px solid #2c313a;background:#2c303a;color:#fff;font-weight:600;font-size:13px;cursor:pointer}
+.tipoFipe button.on{background:#22c55e;border-color:#22c55e;color:#06210f}
+</style><style>/*fipeModal*/
+#fipeOut.modal{position:fixed;top:0;right:0;bottom:0;left:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.6)}
+#fipeOut.modal .res{position:relative;width:100%;max-width:420px;max-height:85vh;overflow:auto;margin:0;box-shadow:0 20px 60px rgba(0,0,0,.45)}
+#fipeOut .fechar{position:absolute;top:10px;right:10px;width:34px;height:34px;border:0;border-radius:50%;background:#eef0f3;color:#111;font-size:16px;line-height:34px;cursor:pointer}
+</style>
+<style>/*visualApp*/
+:root{--sh:0 6px 24px rgba(16,24,40,.08);--fld:#eef1f5}
+@media (prefers-color-scheme:dark){:root{--sh:0 6px 24px rgba(0,0,0,.4);--fld:#252d39}}
+body{letter-spacing:-.01em;padding-bottom:110px;background-color:var(--bg);background-image:linear-gradient(180deg,#dff3e6 0,rgba(223,243,230,0) 380px);background-repeat:no-repeat}
+@media (prefers-color-scheme:dark){body{background-image:linear-gradient(180deg,#10281d 0,rgba(16,40,29,0) 380px)}}
+header{background:linear-gradient(135deg,#0a0a0a,#10301f);border-radius:0 0 28px 28px;padding-bottom:18px}
+h1{font-size:1.6rem;font-weight:800}
+main{padding:22px 16px}
+h2{font-size:1.2rem;font-weight:800;margin:8px 0 14px}
+.ad{border-radius:26px;background:var(--card);color:var(--text);box-shadow:var(--sh);margin-bottom:20px}
+.ad .img{height:170px}
+.ad .body{padding:16px}
+.ad h3{font-size:1.15rem;font-weight:800}
+.ad p{color:var(--muted)}
+.ad .btns a{border:0;background:var(--fld);color:var(--text);font-weight:700;padding:12px}
+.ad .btns a.w{background:linear-gradient(135deg,#15803d,#22c55e);color:#fff}
+.ad .lbl{background:rgba(0,0,0,.45);color:#fff;border-radius:99px;padding:4px 10px}
+.ad .dots i{background:var(--line)}
+.ad .dots i.on{background:#22c55e}
+.tiles{grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:20px}
+.tiles button{aspect-ratio:auto;flex-direction:row;justify-content:flex-start;gap:12px;padding:14px;border:0;border-radius:22px;font-size:.9rem;font-weight:700;text-align:left;box-shadow:var(--sh)}
+.tiles button span{width:46px;height:46px;border-radius:50%;background:var(--gbg);display:grid;place-items:center;font-size:1.5rem}
+.tiles button.on{background:linear-gradient(135deg,#15803d,#22c55e);color:#fff;box-shadow:0 8px 22px rgba(34,197,94,.35)}
+.tiles button.on span{background:rgba(255,255,255,.25)}
+.filtros{background:var(--card);border-radius:26px;padding:18px;box-shadow:var(--sh);margin-bottom:20px}
+.lb{color:var(--text);font-size:1rem;font-weight:800;margin:2px 0 12px}
+.tipoFipe{background:var(--fld);padding:4px;border-radius:99px;gap:4px;margin-bottom:14px}
+.tipoFipe button{border:0;background:transparent;color:var(--muted);border-radius:99px;padding:10px 6px;font-weight:700}
+.tipoFipe button.on{background:linear-gradient(135deg,#15803d,#22c55e);color:#fff;box-shadow:0 4px 12px rgba(34,197,94,.35)}
+#viewCarros .filtros select{background:var(--fld);color:var(--text);border:0;border-radius:99px;padding:14px 18px;font-size:.95rem;margin-bottom:10px}
+.card{border:0;border-radius:24px;padding:16px;margin-bottom:14px;box-shadow:var(--sh)}
+.card.best{box-shadow:inset 0 0 0 2px var(--g),var(--sh)}
+.ic{width:50px;height:50px}
+.n{font-weight:800}
+.pr b{font-size:1.4rem;font-weight:800}
+.tag{border-radius:99px;padding:3px 10px}
+.res{border:0;border-top:5px solid var(--g);border-radius:26px;padding:22px;box-shadow:var(--sh)}
+.res .s{color:var(--muted);font-size:.8rem}
+.res .big{font-size:2.3rem;font-weight:800}
+.res dl{gap:12px 14px}
+nav{left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 10px);padding-bottom:0;max-width:520px;margin:0 auto;border:0;border-radius:26px;box-shadow:0 8px 30px rgba(16,24,40,.18)}
 </style>
 </head>
 <body>
 <header>
-<div class="top"><h1>prime <b>postos</b></h1></div>
+<div class="top"><h1>prime <b>postos</b></h1><button id="btnConta" class="conta">Entrar</button></div>
 
 </header>
 <main>
 <section id="tabMapa">
 <div class="ad" id="ads"></div>
-<div class="tiles" id="tiles"><button data-v="comb"><span>⛽</span>Combustíveis</button><button data-v="carros"><span>🚗</span>Carros</button><button data-v="motos"><span>🏍️</span>Motos</button><button data-v="cam"><span>🚚</span>Caminhões</button></div>
+<div class="tiles" id="tiles"><button data-v="comb"><span>⛽</span>Combustíveis</button><button data-v="carros"><span>🚗</span>Tabela FIPE</button></div>
 <p class="s hide" id="soon" style="text-align:center">Em breve.</p>
 <div id="viewComb" class="hide"><div class="filtros"><div class="sel"><select id="uf"></select><select id="city"></select></div><div class="chips" id="fuels"></div></div>
 <h2>Postos próximos</h2>
-<div id="list"></div></div><div id="viewCarros" class="hide"><div class="filtros"><label class="lb">Consultar pela placa</label><div class="row"><input id="placa" maxlength="8" placeholder="ABC1D23"><button id="btnPlaca">Buscar</button></div><p class="s" id="placaMsg" style="color:#9aa4b2;margin:6px 0 0"></p></div><div id="fipeOut"></div></div>
+<div id="list"></div></div><div id="viewCarros" class="hide"><div class="filtros"><label class="lb">Consultar pela placa</label><div class="row"><input id="placa" maxlength="8" placeholder="ABC1D23"><button id="btnPlaca">Buscar</button></div><p class="s" id="placaMsg" style="color:#9aa4b2;margin:6px 0 0"></p><label class="lb">Consultar pela tabela FIPE</label><div class="tipoFipe"><button type="button" data-t="cars" class="on">Carros</button><button type="button" data-t="motorcycles">Motos</button><button type="button" data-t="trucks">Caminhões</button></div><select id="fMarca"><option>Marca</option></select><select id="fModelo"><option>Modelo</option></select><select id="fAno"><option>Ano</option></select></div><div id="fipeOut"></div></div>
 
 </section>
 <section id="tabPromo" class="hide">
@@ -142,6 +202,81 @@ msg.textContent="";var d=x.d;
 out.innerHTML='<div class="res"><div class="s">Valor FIPE</div><div class="big">'+(d.fipe?esc(d.fipe):"—")+'</div><dl>'+L.filter(function(k){return d[k[0]]}).map(function(k){return '<dt>'+k[1]+'</dt><dd>'+esc(d[k[0]])+'</dd>'}).join("")+'</dl>'+(d.referencia?'<p class="s">Referência: '+esc(d.referencia)+'</p>':'')+'</div>'
 }).catch(function(){msg.textContent="Erro de conexão."})}
 btn.onclick=buscar;inp.onkeydown=function(e){if(e.key==="Enter")buscar()};
+})();
+</script>
+<div id="modal" class="hide"><div class="mbox"><h2 id="mTit">Entrar</h2><input id="mNome" placeholder="Seu nome" class="hide"><input id="mEmail" type="email" placeholder="E-mail"><input id="mSenha" type="password" placeholder="Senha (mínimo 6)"><p id="mMsg"></p><button class="ok" id="mOk">Entrar</button><button class="lk" id="mTroca">Criar conta</button><button class="lk" id="mFecha" style="color:var(--muted)">Fechar</button></div></div>
+<script>
+(function(){
+var $=function(i){return document.getElementById(i)},cad=false;window.me=null;
+function api(u,b){return fetch(u,{method:b?"POST":"GET",headers:{"Content-Type":"application/json"},body:b?JSON.stringify(b):undefined}).then(function(r){return r.json().then(function(d){return{ok:r.ok,d:d}})})}
+function pintar(){var m=window.me,b=$("btnConta");
+if(m){b.className="conta on";b.textContent="Sair ("+m.name.split(" ")[0]+")";if(m.role==="admin"){var t=document.createElement("small");t.textContent="ADMIN";b.appendChild(t)}}
+else{b.className="conta";b.textContent="Entrar"}
+document.dispatchEvent(new Event("me"))}
+function carregar(){api("/api/me").then(function(x){window.me=x.d;pintar()})}
+function abrir(){cad=false;modo();$("mMsg").textContent="";$("modal").className=""}
+function modo(){$("mTit").textContent=cad?"Criar conta":"Entrar";$("mOk").textContent=cad?"Cadastrar":"Entrar";$("mTroca").textContent=cad?"Já tenho conta":"Criar conta";$("mNome").className=cad?"":"hide"}
+$("btnConta").onclick=function(){if(window.me){api("/api/logout",{}).then(carregar)}else abrir()};
+$("mFecha").onclick=function(){$("modal").className="hide"};
+$("mTroca").onclick=function(){cad=!cad;modo()};
+$("mOk").onclick=function(){
+var b={email:$("mEmail").value,password:$("mSenha").value};if(cad)b.name=$("mNome").value;
+$("mMsg").textContent="";
+api(cad?"/api/register":"/api/login",b).then(function(x){if(!x.ok){$("mMsg").textContent=x.d.erro||"Erro.";return}
+$("modal").className="hide";$("mSenha").value="";carregar()})};
+carregar();
+})();
+</script>
+<script>
+(function(){
+var $=function(i){return document.getElementById(i)},B="/api/fipe/cars/brands",ok=false;
+function esc(t){return String(t).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function opt(el,l,t){el.innerHTML='<option value="">'+t+'</option>'+l.map(function(x){return '<option value="'+x.code+'">'+esc(x.name)+'</option>'}).join("")}
+function get(u){return fetch(u).then(function(r){if(!r.ok)throw 0;return r.json()})}
+function semAno(){opt($("fAno"),[],"Ano");$("fipeOut").innerHTML='<p class="s">Sem dados da FIPE para este modelo. Escolha outro.</p>'}
+function erro(){$("fipeOut").innerHTML='<p class="s">FIPE indisponível agora. Tente de novo.</p>'}
+function setTipo(t){B="/api/fipe/"+t+"/brands";document.querySelectorAll(".tipoFipe button").forEach(function(x){x.classList.toggle("on",x.getAttribute("data-t")===t)});$("fipeOut").innerHTML="";opt($("fModelo"),[],"Modelo");opt($("fAno"),[],"Ano");opt($("fMarca"),[],"Carregando…");get(B).then(function(l){opt($("fMarca"),l,"Marca")}).catch(erro)}
+document.querySelectorAll(".tipoFipe button").forEach(function(x){x.onclick=function(){setTipo(x.getAttribute("data-t"))}});
+window.initCarros=function(){if(ok)return;ok=true;
+get(B).then(function(l){opt($("fMarca"),l,"Marca")}).catch(function(){ok=false;erro()})};
+$("fMarca").onchange=function(){var m=this.value;$("fipeOut").innerHTML="";opt($("fModelo"),[],"Carregando…");opt($("fAno"),[],"Ano");
+if(!m){opt($("fModelo"),[],"Modelo");return}
+get(B+"/"+m+"/models").then(function(l){opt($("fModelo"),l,"Modelo")}).catch(erro)};
+$("fModelo").onchange=function(){var m=$("fMarca").value,mo=this.value;$("fipeOut").innerHTML="";opt($("fAno"),[],"Carregando…");
+if(!mo){opt($("fAno"),[],"Ano");return}
+get(B+"/"+m+"/models/"+mo+"/years").then(function(l){opt($("fAno"),l,"Ano")}).catch(semAno)};
+$("fAno").onchange=function(){var m=$("fMarca").value,mo=$("fModelo").value,y=this.value;if(!y)return;
+$("fipeOut").innerHTML='<p class="s">Consultando…</p>';
+get(B+"/"+m+"/models/"+mo+"/years/"+y).then(function(d){
+var L=[["Marca",d.brand],["Modelo",d.model],["Ano",d.modelYear],["Combustível",d.fuel],["Código FIPE",d.codeFipe]];
+$("fipeOut").innerHTML='<div class="res"><div class="s">Valor FIPE</div><div class="big">'+esc(d.price||"—")+'</div><dl>'+L.filter(function(k){return k[1]}).map(function(k){return '<dt>'+k[0]+'</dt><dd>'+esc(k[1])+'</dd>'}).join("")+'</dl>'+(d.referenceMonth?'<p class="s">Referência: '+esc(d.referenceMonth)+'</p>':'')+'</div>'}).catch(erro)};
+})();
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var els = Array.from(document.querySelectorAll('*'));
+  var a = els.find(function (e) { return e.children.length === 0 && e.textContent.trim() === 'Consultar pela placa'; });
+  var b = els.find(function (e) { return e.children.length === 0 && e.textContent.trim() === 'Consultar pela tabela FIPE'; });
+  if (a && b && a.parentNode === b.parentNode) {
+    var n = a;
+    while (n && n !== b) { n.style.display = 'none'; n = n.nextElementSibling; }
+  }
+});
+</script>
+<script>/*fipeModal*/
+(function(){
+var o=document.getElementById("fipeOut");if(!o)return;
+function fechar(){o.innerHTML="";o.classList.remove("modal");var a=document.getElementById("fAno");if(a)a.value=""}
+function ajustar(){
+var r=o.querySelector(".res");
+if(r){
+if(!o.classList.contains("modal"))o.classList.add("modal");
+if(!r.querySelector(".fechar")){var b=document.createElement("button");b.type="button";b.className="fechar";b.textContent="\u2715";b.setAttribute("aria-label","Fechar");b.onclick=fechar;r.insertBefore(b,r.firstChild)}
+}else if(o.classList.contains("modal")){o.classList.remove("modal")}
+}
+new MutationObserver(ajustar).observe(o,{childList:true,subtree:true});
+o.addEventListener("click",function(e){if(e.target===o)fechar()});
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&o.classList.contains("modal"))fechar()});
 })();
 </script>
 </body>

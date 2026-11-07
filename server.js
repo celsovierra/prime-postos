@@ -27,17 +27,30 @@ app.get('/api/stations', (req, res) => {
   const pr = db.prepare('SELECT fuel, price FROM prices WHERE station_id=?');
   res.json(rows.map(s => ({ ...s, prices: Object.fromEntries(pr.all(s.id).map(x => [x.fuel, x.price])) })));
 });
-app.use(express.static(__dirname));
+app.get('/', (q, r) => r.sendFile(__dirname + '/index.html'));
+app.get('/patrocinadores.js', (q, r) => r.sendFile(__dirname + '/patrocinadores.js'));
+app.use('/img', express.static(__dirname + '/img'));
 app.listen(process.env.PORT || 8080, () => console.log('Rodando na porta 8080'));
 const FIPE = 'https://fipe.parallelum.com.br/api/v2';
 const fipeCache = new Map();
+let fipeRef = { code: null, t: 0 };
+async function fipeSufixo(path) {
+  if (!(fipeRef.code && Date.now() - fipeRef.t < 3600000)) {
+    try {
+      const r = await fetch(FIPE + '/references');
+      if (r.ok) { const l = await r.json(); if (l[0] && l[0].code) fipeRef = { code: String(l[0].code), t: Date.now() }; }
+    } catch (e) {}
+  }
+  if (!fipeRef.code || /[?&]reference=/.test(path)) return '';
+  return (path.includes('?') ? '&' : '?') + 'reference=' + fipeRef.code;
+}
 app.get(/^\/api\/fipe\/(.+)$/, async (req, res) => {
   const path = req.params[0];
   if (!/^[a-z0-9\/-]+$/i.test(path)) return res.status(400).json({ erro: 'caminho inválido' });
   const hit = fipeCache.get(path);
   if (hit && Date.now() - hit.t < 6 * 3600e3) return res.json(hit.d);
   try {
-    const r = await fetch(FIPE + '/' + path);
+    const r = await fetch(FIPE + '/' + path + (await fipeSufixo(path)));
     const d = await r.json();
     if (r.ok) fipeCache.set(path, { t: Date.now(), d });
     res.status(r.status).json(d);
@@ -64,4 +77,56 @@ app.get('/api/placa/:placa', async (req, res) => {
   } catch (e) {
     res.status(502).json({ erro: 'Consulta indisponível.' });
   }
+});
+const crypto = require('crypto');
+db.exec(`
+CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY, email TEXT UNIQUE, name TEXT, hash TEXT, salt TEXT, role TEXT DEFAULT 'user');
+CREATE TABLE IF NOT EXISTS sessions(token TEXT PRIMARY KEY, user_id INTEGER, created_at TEXT DEFAULT CURRENT_TIMESTAMP);
+`);
+const hashPw = (pw, salt) => crypto.scryptSync(pw, salt, 64).toString('hex');
+const sidOf = (req) => { const m = /(?:^|; )sid=([a-f0-9]+)/.exec(req.headers.cookie || ''); return m ? m[1] : null; };
+const getUser = (req) => {
+  const t = sidOf(req);
+  if (!t) return null;
+  return db.prepare('SELECT u.id,u.email,u.name,u.role FROM sessions s JOIN users u ON u.id=s.user_id WHERE s.token=?').get(t) || null;
+};
+const startSession = (res, uid) => {
+  const t = crypto.randomBytes(32).toString('hex');
+  db.prepare('INSERT INTO sessions(token,user_id) VALUES(?,?)').run(t, uid);
+  res.setHeader('Set-Cookie', `sid=${t}; HttpOnly; SameSite=Lax; Path=/; Max-Age=2592000`);
+};
+const requireAdmin = (req, res, next) => {
+  const u = getUser(req);
+  if (!u || u.role !== 'admin') return res.status(403).json({ erro: 'Só administrador.' });
+  req.user = u; next();
+};
+const tentativas = new Map();
+const limite = (req, res, next) => {
+  const k = req.ip, agora = Date.now();
+  const a = (tentativas.get(k) || []).filter(t => agora - t < 15 * 60e3);
+  if (a.length >= 10) return res.status(429).json({ erro: 'Muitas tentativas. Aguarde 15 minutos.' });
+  a.push(agora); tentativas.set(k, a); next();
+};
+app.get('/api/me', (req, res) => res.json(getUser(req)));
+app.post('/api/register', limite, (req, res) => {
+  const { name, email, password } = req.body || {};
+  if (!name || !/^\S+@\S+\.\S+$/.test(email || '') || (password || '').length < 6) return res.status(400).json({ erro: 'Preencha nome, e-mail válido e senha (mín. 6).' });
+  if (db.prepare('SELECT 1 FROM users WHERE email=?').get(email.toLowerCase())) return res.status(409).json({ erro: 'E-mail já cadastrado.' });
+  const salt = crypto.randomBytes(16).toString('hex');
+  const id = db.prepare('INSERT INTO users(email,name,hash,salt,role) VALUES(?,?,?,?,?)').run(email.toLowerCase(), name, hashPw(password, salt), salt, 'user').lastInsertRowid;
+  startSession(res, id);
+  res.json({ ok: true });
+});
+app.post('/api/login', limite, (req, res) => {
+  const { email, password } = req.body || {};
+  const u = db.prepare('SELECT * FROM users WHERE email=?').get((email || '').toLowerCase());
+  if (!u || hashPw(password || '', u.salt) !== u.hash) return res.status(401).json({ erro: 'E-mail ou senha incorretos.' });
+  startSession(res, u.id);
+  res.json({ ok: true });
+});
+app.post('/api/logout', (req, res) => {
+  const t = sidOf(req);
+  if (t) db.prepare('DELETE FROM sessions WHERE token=?').run(t);
+  res.setHeader('Set-Cookie', 'sid=; Path=/; Max-Age=0');
+  res.json({ ok: true });
 });
