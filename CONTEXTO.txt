@@ -1,0 +1,74 @@
+CONTEXTO DO PROJETO: PRIME POSTOS (atualizado em 07/11/2026)
+
+COMO EU (USUARIO) QUERO QUE VOCE RESPONDA
+- Fale pouco. Seja direto.
+- Todo ajuste vem como comando para colar no terminal (bash, Codespaces do GitHub).
+- Um passo por vez. Espere eu avisar "pronto" antes do proximo.
+- Divida comandos grandes em partes pequenas (colagens grandes saem cortadas).
+- So o comando FINAL de cada mudanca abre a pagina de teste: "$BROWSER" http://localhost:8080 (leitura e diagnostico nao abrem).
+- Eu uso Windows. Falo portugues do Brasil.
+- O Claude nao altera arquivos sozinho: so eu rodo os comandos. Para ele ver algo, eu copio o TEXTO do terminal e colo no chat.
+
+O QUE E
+Site de precos de combustiveis para abrir dentro de um app (WebView). Visual de app limpo, estilo Abastece+.
+
+ONDE ESTA
+- GitHub: celsovierra/prime-postos (publico). Nunca enviar .env, data.db nem backups.
+- Desenvolvo e testo no Codespaces (node server.js, porta 8080). VPS ainda nao feita.
+- Reiniciar servidor: pkill -f "node server.js"; nohup node server.js > server.log 2>&1 &
+
+TECNOLOGIA
+- Frontend: index.html (HTML, CSS e JS puro, um arquivo so)
+- Backend: Node + Express (server.js), SQLite com better-sqlite3 (data.db)
+- Outros arquivos: patrocinadores.js (anuncios do banner), img/, placa.js (nao ligado), donos.js
+- .gitignore: node_modules, data.db, server.log, *.bak*, index.html.semfipe, index.html.complaca, .env
+
+TELA DO USUARIO (hoje)
+- Visual de app: cabecalho preto com degrade verde e cantos arredondados, fundo com degrade verde suave, cards brancos arredondados com sombra, abas flutuando embaixo (Mapa e Promocoes). Segue modo escuro do celular. CSS no bloco "visualApp" no fim do head do index.html.
+- Mapa: banner de patrocinadores (troca a cada 5s), botoes Combustiveis e Tabela FIPE, postos por menor preco com "Como chegar".
+- Tabela FIPE (gratis): seletor Carros/Motos/Caminhoes + Marca/Modelo/Ano. O resultado abre em card no meio da tela (modal) com X; fecha tocando fora ou Esc.
+- Campo de placa existe no HTML mas fica escondido. Consulta por placa foi abandonada (API paga).
+- Estados e cidades vem do IBGE. Postos e precos vem de GET /api/stations?city=Teresina, PI. Outra rota: GET /api/cities.
+- Tabelas: cities, stations (nome, bandeira, endereco, lat, lng, promo, owner_id), prices (station_id, fuel, price, updated_at).
+
+FIPE NO SERVIDOR
+- /api/fipe/* repassa para fipe.parallelum.com.br/api/v2, com cache e com o mes de referencia mais recente (renovado a cada hora). Sem o mes a FIPE devolve 404.
+- Modelo sem dados mostra "Sem dados da FIPE para este modelo".
+
+PLACA (decisao)
+- Nao usar por enquanto. consultadeplaca.net: 20 consultas gratis no cadastro, depois R$ 0,07 por placa; placas de teste TST0001 a TST0003 gratis. A chave ficaria no .env (CDP_API_KEY).
+- placa.js existe no repo mas NAO esta ligado ao server.js. O server.js ainda tem uma rota /api/placa antiga sem uso.
+
+LOGIN E PERFIS (ja existe no server.js)
+- Tabelas users (role: user, admin, owner) e sessions. Senha com scrypt, cookie de sessao.
+- Rotas: /api/me, /api/register, /api/login, /api/logout, funcao requireAdmin.
+- Cadastro pelo site cria SEMPRE usuario final (role user).
+- Admin e criado por comando no terminal.
+
+3 AREAS (decisao)
+1. USUARIO FINAL: so consulta (area atual, pronta).
+2. DONO DE POSTO: NAO se cadastra pelo site. Entra por LINK DE CONVITE gerado pelo admin (valido 7 dias, uso unico). Muda os precos so dos postos dele (stations.owner_id).
+3. ADMIN PRINCIPAL: gera convites, ve e bloqueia donos, controla a cobranca do acesso dos donos.
+
+COBRANCA DOS DONOS
+- Fase 1: admin registra pagamento e vencimento (owners.paid_until). Acesso bloqueia sozinho quando vence.
+- Fase 2: Pix/cartao automatico (Mercado Pago, Asaas ou similar), precisa de conta no servico.
+
+STATUS DO DONOS.JS
+- donos.js CRIADO (62 linhas, sintaxe OK) mas AINDA NAO LIGADO ao server.js.
+- Cria tabelas invites e owners e a coluna stations.owner_id.
+- Rotas: POST /api/admin/invites, GET e POST /api/convite/:token, GET /api/admin/donos.
+- Espera receber de server.js: requireAdmin, getUser, hashPw, startSession, limite.
+
+PROXIMOS PASSOS (um por vez)
+2. Ligar donos.js ao server.js, reiniciar, conferir se o usuario celso e admin.
+3. Tela do admin: gerar link de convite e lista de donos.
+4. Pagina do convite (/?convite=TOKEN): dono cria a senha.
+5. Painel do dono: alterar precos so dos proprios postos (criar requireOwner).
+6. Cobranca fase 1 (vencimento e bloqueio automatico).
+7. Dados reais de postos e precos (hoje so 2 postos de exemplo em Teresina).
+8. Subir na VPS (Node, pm2, nginx com HTTPS).
+
+ATENCAO
+- Todos os postos e precos atuais sao de EXEMPLO.
+- Colagens grandes saem cortadas: sempre dividir e conferir com node --check e contagem de linhas.
