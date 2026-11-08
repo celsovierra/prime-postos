@@ -58,6 +58,7 @@ input,select{width:100%;background:var(--fld);color:var(--text);border:0;border-
 <button class="btn" id="addPosto" type="button">Criar posto</button>
 <p id="msg2"></p>
 </div>
+<div class="card"><h2>Anúncios (patrocinadores)</h2><p class="s">Aparecem no banner do site, na ordem abaixo. Foto: JPG, PNG ou WebP até 5 MB.</p><div id="ads"><p class="s">Carregando…</p></div><button class="btn" id="novoAd" type="button">Novo anúncio</button></div>
 <div class="card"><h2>Postos e preços</h2><div id="postos"><p class="s">Carregando…</p></div></div>
 </div>
 </main>
@@ -100,8 +101,28 @@ api("/api/admin/invites",{name:$("nome").value,email:$("email").value,days:$("di
 $("copiar").onclick=function(){var b=$("copiar");$("lk").select();
 var ok=function(){b.textContent="Copiado!";setTimeout(function(){b.textContent="Copiar link"},1500)};
 if(navigator.clipboard){navigator.clipboard.writeText($("lk").value).then(ok)}else{document.execCommand("copy");ok()}};
+function carregarAds(){return api("/api/admin/anuncios").then(function(l){
+$("ads").innerHTML=l.length?l.map(function(a){return '<div class="ad" data-id="'+a.id+'" style="border:1px solid #ddd;border-radius:12px;padding:10px;margin-bottom:12px">'
++(a.img?'<img src="/'+esc(a.img)+'" style="width:100%;max-height:140px;object-fit:cover;border-radius:8px">':'<p class="s">Sem foto</p>')
++'<label>Foto (JPG, PNG ou WebP)</label><input type="file" class="f" accept="image/jpeg,image/png,image/webp">'
++'<input type="hidden" class="img" value="'+esc(a.img)+'">'
++'<label>Título</label><input class="t" maxlength="80" value="'+esc(a.titulo)+'">'
++'<label>Texto</label><input class="x" maxlength="200" value="'+esc(a.texto)+'">'
++'<label>WhatsApp (com DDI, ex.: 5586999999999)</label><input class="w" inputmode="numeric" value="'+esc(a.whatsapp)+'">'
++'<label>Site (https://...)</label><input class="si" value="'+esc(a.site)+'">'
++'<label>Ordem (menor aparece primeiro)</label><input class="o" type="number" value="'+a.ordem+'">'
++'<label><input type="checkbox" class="at"'+(a.ativo?' checked':'')+'> Ativo</label>'
++'<button class="btn sv" type="button">Salvar</button> <button class="btn ap" type="button" style="background:#c0392b">Apagar</button></div>'}).join(""):'<p class="s">Nenhum anúncio ainda.</p>'}).catch(erro)}
+$("ads").onclick=function(e){var c=e.target.closest(".ad");if(!c)return;var id=c.getAttribute("data-id"),q=function(k){return c.querySelector(k)};
+if(e.target.classList.contains("sv")){
+var corpo=function(img){return{titulo:q(".t").value,texto:q(".x").value,whatsapp:q(".w").value,site:q(".si").value,img:img,ordem:q(".o").value,ativo:q(".at").checked?1:0}};
+var fi=q(".f").files[0];
+var p=fi?fetch("/api/admin/anuncios/imagem",{method:"POST",headers:{"Content-Type":fi.type},body:fi}).then(function(r){return r.json().then(function(d){if(!r.ok)throw new Error(d.erro||"Erro no envio");return d.img})}):Promise.resolve(q(".img").value);
+p.then(function(img){return api("/api/admin/anuncios/"+id,corpo(img))}).then(carregarAds).catch(erro)}
+if(e.target.classList.contains("ap")&&confirm("Apagar este anúncio?")){api("/api/admin/anuncios/"+id+"/apagar",{}).then(carregarAds).catch(erro)}};
+$("novoAd").onclick=function(){api("/api/admin/anuncios",{titulo:"Novo anúncio",texto:"",whatsapp:"",site:"",img:"",ordem:0,ativo:1}).then(carregarAds).catch(erro)};
 api("/api/me").then(function(u){if(!u||u.role!=="admin"){$("negado").classList.remove("hide");return}
-$("app").classList.remove("hide");carregarDonos().then(carregarPostos)}).catch(function(){$("negado").classList.remove("hide")});
+$("app").classList.remove("hide");carregarDonos().then(carregarPostos).then(carregarAds)}).catch(function(){$("negado").classList.remove("hide")});
 })();
 </script>
 </body></html>
