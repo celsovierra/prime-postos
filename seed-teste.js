@@ -1,7 +1,7 @@
-// Contas de TESTE. So cria se SEED_TESTE=1 (usar so no Codespaces, NUNCA na VPS).
+// Contas de TESTE (usuario, adm, posto). Sempre criadas. Para desligar: SEED_TESTE=0.
 const crypto = require('crypto');
 module.exports = (db, hashPw) => {
-  if (process.env.SEED_TESTE !== '1') return;
+  if (process.env.SEED_TESTE === '0') return;
   const contas = [
     ['usuario', 'Usuario Teste', 'usuario', 'user'],
     ['adm', 'Admin Teste', 'adm', 'admin'],
