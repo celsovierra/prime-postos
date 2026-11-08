@@ -132,6 +132,7 @@ nav{left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 10px);pad
 <h2>Promoções</h2>
 <div id="promos"></div>
 </section>
+<p style="text-align:center;font-size:.7rem;color:#888;margin:16px 0 110px">Dados dos postos: &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener" style="color:inherit">colaboradores do OpenStreetMap</a></p>
 </main>
 <nav>
 <button class="on" data-t="tabMapa"><span>📍</span>Mapa</button>
@@ -155,12 +156,12 @@ var q=encodeURIComponent($("city").value+", "+$("uf").value);
 fetch("/api/stations?city="+q).then(function(r){return r.json()}).then(function(l){st.rows=l;render()}).catch(function(){st.rows=[];render()})}
 function render(){
 var f=st.fuel,fn=f.toUpperCase();
-var rows=st.rows.filter(function(s){return s.prices&&s.prices[f]!=null}).map(function(s){
-return{s:s,p:s.prices[f],d:st.pos?dist(st.pos[0],st.pos[1],s.lat,s.lng):null}}).sort(function(a,b){return a.p-b.p});
-var min=rows.length?rows[0].p:0;
+var rows=st.rows.map(function(s){var p=s.prices&&s.prices[f]!=null?s.prices[f]:null;
+return{s:s,p:p,d:st.pos?dist(st.pos[0],st.pos[1],s.lat,s.lng):null}}).sort(function(a,b){if(a.p!=null&&b.p!=null)return a.p-b.p;if(a.p!=null)return -1;if(b.p!=null)return 1;if(a.d!=null&&b.d!=null)return a.d-b.d;return String(a.s.name).localeCompare(String(b.s.name))}).slice(0,60);
+var min=rows.length&&rows[0].p!=null?rows[0].p:-1;
 $("list").innerHTML=rows.length?rows.map(function(r){var s=r.s;
 var u="https://www.google.com/maps/dir/?api=1&destination="+s.lat+","+s.lng;
-return '<div class="card'+(r.p===min?' best':'')+'"><div class="ic">⛽</div><div class="inf"><div class="n">'+s.name+(s.promo?'<span class="tag">Promo</span>':'')+'</div><div class="s">'+s.address+' · '+s.brand+(r.d!=null?' · '+r.d.toFixed(1).replace(".",",")+' km':'')+'</div><a href="'+u+'" target="_blank" rel="noopener">Como chegar →</a></div><div class="pr"><small>'+fn+'</small><b>'+brl(r.p)+'</b></div></div>'}).join(""):'<p class="s">Nenhum posto cadastrado nesta cidade ainda.</p>';
+return '<div class="card'+(r.p!=null&&r.p===min?' best':'')+'"><div class="ic">⛽</div><div class="inf"><div class="n">'+s.name+(s.promo?'<span class="tag">Promo</span>':'')+'</div><div class="s">'+s.address+' · '+s.brand+(r.d!=null?' · '+r.d.toFixed(1).replace(".",",")+' km':'')+'</div><a href="'+u+'" target="_blank" rel="noopener">Como chegar →</a></div><div class="pr"><small>'+fn+'</small><b>'+(r.p!=null?brl(r.p):'Sem preço')+'</b></div></div>'}).join(""):'<p class="s">Nenhum posto cadastrado nesta cidade ainda.</p>';
 $("fuels").innerHTML=FUELS.map(function(x){return '<button class="chip'+(x[1]===f?' on':'')+'" data-f="'+x[1]+'">'+x[0]+'</button>'}).join("");
 var pr=st.rows.filter(function(s){return s.promo});
 $("promos").innerHTML=pr.length?pr.map(function(s){return '<div class="card"><span class="badge">Promo</span><div class="inf"><div class="n">'+s.name+'</div><div class="s">'+s.address+'</div></div></div>'}).join(""):'<p class="s">Sem promoções nesta cidade.</p>'}
