@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Convite - Prime Postos</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--text:#14181f;--muted:#667085;--fld:#eef1f5;--sh:0 6px 24px rgba(16,24,40,.08)}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1318;--card:#1a1f28;--text:#eef1f5;--muted:#9aa4b2;--fld:#252d39;--sh:0 6px 24px rgba(0,0,0,.4)}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{background:linear-gradient(135deg,#0a0a0a,#10301f);color:#fff;padding:18px 16px 22px;border-radius:0 0 28px 28px}
+h1{margin:0;font-size:1.4rem}h1 b{color:#22c55e}
+main{max-width:420px;margin:0 auto;padding:20px 16px}
+.card{background:var(--card);border-radius:24px;padding:20px;box-shadow:var(--sh)}
+h2{margin:0 0 8px;font-size:1.2rem}
+label{display:block;color:var(--muted);font-size:.8rem;font-weight:600;margin:12px 0 6px}
+input{width:100%;background:var(--fld);color:var(--text);border:0;border-radius:99px;padding:13px 16px;font-size:1rem}
+.btn{width:100%;margin-top:16px;padding:13px;border:0;border-radius:99px;background:linear-gradient(135deg,#15803d,#22c55e);color:#fff;font-weight:700;font-size:1rem;cursor:pointer}
+.s{color:var(--muted);font-size:.88rem;margin:0}
+#msg{color:#e5484d;font-size:.85rem;min-height:1em;margin-top:10px}
+.hide{display:none}
+</style></head><body>
+<header><h1>prime <b>postos</b></h1></header>
+<main>
+<div id="erro" class="card hide"><h2>Convite inválido</h2><p class="s">Este link expirou ou já foi usado. Peça um novo ao administrador.</p></div>
+<div id="form" class="card hide"><h2 id="tit"></h2><p class="s">Crie sua senha para acessar o painel de preços do seu posto.</p>
+<div id="campoEmail"><label>E-mail</label><input id="email" type="email"></div>
+<label>Senha (mínimo 8 caracteres)</label><input id="senha" type="password">
+<label>Repita a senha</label><input id="senha2" type="password">
+<button class="btn" id="criar" type="button">Criar conta</button><p id="msg"></p></div>
+</main>
+<script>
+(function(){
+var $=function(i){return document.getElementById(i)};
+var t=new URLSearchParams(location.search).get("t")||"";
+fetch("/api/convite/"+encodeURIComponent(t)).then(function(r){return r.json().then(function(d){if(!r.ok)throw 0;return d})}).then(function(d){
+$("tit").textContent="Olá, "+d.name;
+if(d.email){$("email").value=d.email;$("campoEmail").classList.add("hide")}
+$("form").classList.remove("hide")}).catch(function(){$("erro").classList.remove("hide")});
+$("criar").onclick=function(){
+$("msg").textContent="";
+if($("senha").value!==$("senha2").value){$("msg").textContent="As senhas não conferem.";return}
+fetch("/api/convite/"+encodeURIComponent(t),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:$("email").value,password:$("senha").value})})
+.then(function(r){return r.json().catch(function(){return{}}).then(function(d){if(!r.ok)throw new Error(d.erro||("Erro "+r.status));location.href="/dono"})})
+.catch(function(e){$("msg").textContent=e.message})};
+})();
+</script></body></html>

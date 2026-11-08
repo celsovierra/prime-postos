@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS owners(user_id INTEGER PRIMARY KEY, paid_until TEXT, 
     db.prepare('INSERT INTO invites(token,name,email,days,created_by,expires_at) VALUES(?,?,?,?,?,?)')
       .run(token, name, email, days, admin.id, exp);
     const proto = req.headers['x-forwarded-proto'] || req.protocol;
-    res.json({ link: proto + '://' + req.get('host') + '/?convite=' + token, expira: exp });
+    res.json({ link: proto + '://' + req.get('host') + '/convite?t=' + token, expira: exp });
   });
 
   app.get('/api/convite/:token', (req, res) => {

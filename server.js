@@ -130,3 +130,8 @@ app.post('/api/logout', (req, res) => {
   res.setHeader('Set-Cookie', 'sid=; Path=/; Max-Age=0');
   res.json({ ok: true });
 });
+require('./donos')(app, db, { requireAdmin, getUser, hashPw, startSession, limite });
+app.get('/admin', (q, r) => r.sendFile(__dirname + '/admin.html'));
+require('./painel')(app, db, { requireAdmin, getUser });
+app.get('/convite', (q, r) => r.sendFile(__dirname + '/convite.html'));
+app.get('/dono', (q, r) => r.sendFile(__dirname + '/dono.html'));
