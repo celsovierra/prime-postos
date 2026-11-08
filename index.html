@@ -144,15 +144,17 @@ var API="https://servicodados.ibge.gov.br/api/v1/localidades/estados";
 var st={fuel:"gasolina",pos:null,rows:[]};
 var FUELS=[["Gasolina","gasolina"],["Etanol","etanol"],["Diesel","diesel"],["GNV","gnv"]];
 function opts(el,list,sel){el.innerHTML=list.map(function(x){return '<option value="'+x[0]+'"'+(x[0]===sel?' selected':'')+'>'+x[1]+'</option>'}).join("")}
+function lembra(k){try{return localStorage.getItem("pp_"+k)}catch(e){return null}}
+function guarda(k,v){try{localStorage.setItem("pp_"+k,v)}catch(e){}}
 function loadUF(){fetch(API+"?orderBy=nome").then(function(r){return r.json()}).then(function(l){
-opts($("uf"),l.map(function(e){return [e.sigla,e.nome]}),"PI");loadCities()})}
+opts($("uf"),l.map(function(e){return [e.sigla,e.nome]}),lembra("uf")||"PI");loadCities()})}
 function loadCities(){$("city").innerHTML="<option>Carregando…</option>";
 fetch(API+"/"+$("uf").value+"/municipios?orderBy=nome").then(function(r){return r.json()}).then(function(l){
-opts($("city"),l.map(function(m){return [m.nome,m.nome]}),$("uf").value==="PI"?"Teresina":null);loadStations()})}
+var salva=lembra("cidade");var ok=salva&&l.some(function(m){return m.nome===salva});opts($("city"),l.map(function(m){return [m.nome,m.nome]}),ok?salva:($("uf").value==="PI"?"Teresina":null));loadStations()})}
 function brl(v){return "R$ "+v.toFixed(2).replace(".",",")}
 function dist(a,b,c,d){var R=6371,r=Math.PI/180,x=(c-a)*r,y=(d-b)*r;var h=Math.sin(x/2)*Math.sin(x/2)+Math.cos(a*r)*Math.cos(c*r)*Math.sin(y/2)*Math.sin(y/2);return 2*R*Math.asin(Math.sqrt(h))}
 function loadStations(){
-var q=encodeURIComponent($("city").value+", "+$("uf").value);
+guarda("uf",$("uf").value);guarda("cidade",$("city").value);var q=encodeURIComponent($("city").value+", "+$("uf").value);
 fetch("/api/stations?city="+q).then(function(r){return r.json()}).then(function(l){st.rows=l;render()}).catch(function(){st.rows=[];render()})}
 function render(){
 var f=st.fuel,fn=f.toUpperCase();
@@ -165,7 +167,7 @@ return '<div class="card'+(r.p!=null&&r.p===min?' best':'')+'"><div class="ic">�
 $("fuels").innerHTML=FUELS.map(function(x){return '<button class="chip'+(x[1]===f?' on':'')+'" data-f="'+x[1]+'">'+x[0]+'</button>'}).join("");
 var pr=st.rows.filter(function(s){return s.promo});
 $("promos").innerHTML=pr.length?pr.map(function(s){return '<div class="card"><span class="badge">Promo</span><div class="inf"><div class="n">'+s.name+'</div><div class="s">'+s.address+'</div></div></div>'}).join(""):'<p class="s">Sem promoções nesta cidade.</p>'}
-$("uf").onchange=loadCities;
+$("uf").onchange=function(){guarda("cidade","");loadCities()};
 $("city").onchange=loadStations;
 $("fuels").onclick=function(e){var f=e.target.getAttribute("data-f");if(f){st.fuel=f;render()}};
 document.querySelector("nav").onclick=function(e){var b=e.target.closest("button");if(!b)return;
