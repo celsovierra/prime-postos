@@ -204,7 +204,7 @@ out.innerHTML='<div class="res"><div class="s">Valor FIPE</div><div class="big">
 btn.onclick=buscar;inp.onkeydown=function(e){if(e.key==="Enter")buscar()};
 })();
 </script>
-<div id="modal" class="hide"><div class="mbox"><h2 id="mTit">Entrar</h2><input id="mNome" placeholder="Seu nome" class="hide"><input id="mEmail" type="email" placeholder="E-mail"><input id="mSenha" type="password" placeholder="Senha (mínimo 6)"><p id="mMsg"></p><button class="ok" id="mOk">Entrar</button><button class="lk" id="mTroca">Criar conta</button><button class="lk" id="mFecha" style="color:var(--muted)">Fechar</button></div></div>
+<div id="modal" class="hide"><div class="mbox"><h2 id="mTit">Entrar</h2><input id="mNome" placeholder="Seu nome" class="hide"><input id="mEmail" type="text" autocapitalize="none" placeholder="E-mail ou login"><input id="mSenha" type="password" placeholder="Senha (mínimo 6)"><p id="mMsg"></p><button class="ok" id="mOk">Entrar</button><button class="lk" id="mTroca">Criar conta</button><button class="lk" id="mFecha" style="color:var(--muted)">Fechar</button></div></div>
 <script>
 (function(){
 var $=function(i){return document.getElementById(i)},cad=false;window.me=null;

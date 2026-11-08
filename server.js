@@ -131,6 +131,7 @@ app.post('/api/logout', (req, res) => {
   res.json({ ok: true });
 });
 require('./donos')(app, db, { requireAdmin, getUser, hashPw, startSession, limite });
+require('./seed-teste')(db, hashPw);
 app.get('/admin', (q, r) => r.sendFile(__dirname + '/admin.html'));
 require('./painel')(app, db, { requireAdmin, getUser });
 app.get('/convite', (q, r) => r.sendFile(__dirname + '/convite.html'));
