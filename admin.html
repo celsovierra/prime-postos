@@ -32,9 +32,11 @@ input,select{width:100%;background:var(--fld);color:var(--text);border:0;border-
 .row2{display:flex;gap:6px;flex-wrap:wrap}.row2 select{flex:1;min-width:140px;width:auto}
 #msg,#msg2{color:var(--muted);font-size:.85rem;min-height:1em;margin-top:8px}
 .hide{display:none}
-</style></head><body>
+</style><style id="abasAdm">#abas{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 14px;margin:0 auto;max-width:760px}#abas button{flex:0 0 auto;border:0;border-radius:999px;padding:10px 16px;font:inherit;font-weight:700;font-size:.85rem;cursor:pointer;background:#fff;color:#111;box-shadow:0 2px 8px rgba(0,0,0,.08);white-space:nowrap}#abas button.on{background:linear-gradient(135deg,#15803d,#22c55e);color:#fff}</style>
+</head><body>
 <header><h1>Abastece<b>+</b> · Admin</h1><a href="/">Voltar ao site</a></header>
 <main>
+<nav id="abas"><button data-t="Convidar dono de posto">Convidar</button><button data-t="Donos de postos">Donos</button><button data-t="Novo posto">Novo posto</button><button data-t="Anúncios (patrocinadores)">Anúncios</button><button data-t="Postos e preços">Postos e preços</button></nav>
 <div id="negado" class="card hide"><h2>Acesso negado</h2><p class="s">Entre no site com a conta de administrador e abra esta página de novo.</p></div>
 <div id="app" class="hide">
 <div class="card"><h2>Convidar dono de posto</h2>
@@ -125,4 +127,5 @@ api("/api/me").then(function(u){if(!u||u.role!=="admin"){$("negado").classList.r
 $("app").classList.remove("hide");carregarDonos().then(carregarPostos).then(carregarAds)}).catch(function(){$("negado").classList.remove("hide")});
 })();
 </script>
+<script id="abasJs">(function(){var bs=document.querySelectorAll("#abas button");function cards(){return Array.prototype.filter.call(document.querySelectorAll("#app > .card"),function(c){return c.id!=="negado"})}function t(c){var h=c.querySelector("h2");return h?h.textContent.trim():""}function ir(n){cards().forEach(function(c){c.style.display=t(c)===n?"":"none"});bs.forEach(function(b){b.className=b.getAttribute("data-t")===n?"on":""})}bs.forEach(function(b){b.onclick=function(){ir(b.getAttribute("data-t"))}});ir(bs[0].getAttribute("data-t"))})();</script>
 </body></html>
