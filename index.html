@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Prime Postos</title>
+<title>Abastece+</title>
 <style>
 :root{--bg:#f6f7f9;--card:#fff;--text:#14181f;--muted:#667085;--line:#e3e6eb;--g:#16a34a;--gbg:#e3f6ea;--head:#111;--headtext:#fff}
 @media (prefers-color-scheme:dark){:root{--bg:#0f1318;--card:#1a1f28;--text:#eef1f5;--muted:#9aa4b2;--line:#2a313d;--g:#3ddc97;--gbg:#12362a}}
@@ -116,7 +116,7 @@ nav{left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 10px);pad
 </head>
 <body>
 <header>
-<div class="top"><h1>prime <b>postos</b></h1><button id="btnConta" class="conta">Entrar</button></div>
+<div class="top"><h1>Abastece<b>+</b></h1><button id="btnConta" class="conta">Entrar</button></div>
 
 </header>
 <main>
@@ -171,7 +171,7 @@ $("promos").innerHTML=pr.length?pr.map(function(s){return '<div class="card"><sp
 $("uf").onchange=function(){guarda("cidade","");loadCities()};
 $("city").onchange=loadStations;
 $("fuels").onclick=function(e){var f=e.target.getAttribute("data-f");if(f){st.fuel=f;render()}};
-document.querySelector("nav").onclick=function(e){var b=e.target.closest("button");if(!b)return;if(b.id==="ze"){abrirZe();return;}
+document.querySelector("nav").onclick=function(e){var b=e.target.closest("button");if(!b)return;
 document.querySelectorAll("nav button").forEach(function(x){x.className=x===b?"on":""});
 ["tabMapa","tabPromo"].forEach(function(t){$(t).className=t===b.getAttribute("data-t")?"":"hide"})};
 if(navigator.geolocation)navigator.geolocation.getCurrentPosition(function(p){st.pos=[p.coords.latitude,p.coords.longitude];render()},function(){});
@@ -182,7 +182,7 @@ loadUF();
 <script>
 (function(){var map={comb:"viewComb",carros:"viewCarros"};
 function abrirZe(){var h=false;function v(){if(document.hidden)h=true}document.addEventListener("visibilitychange",v);location.href="zedelivery://";setTimeout(function(){document.removeEventListener("visibilitychange",v);if(!h)location.href="https://www.ze.delivery"},1500)}
-document.getElementById("tiles").onclick=function(e){var b=e.target.closest("button");if(!b)return;
+document.getElementById("tiles").onclick=function(e){var b=e.target.closest("button");if(!b)return;if(b.id==="ze"){abrirZe();return;}
 var k=b.getAttribute("data-v"),was=b.className==="on";
 document.querySelectorAll("#tiles button").forEach(function(x){x.className=""});
 Object.keys(map).forEach(function(m){document.getElementById(map[m]).className="hide"});
