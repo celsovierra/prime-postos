@@ -2,6 +2,7 @@
 const crypto = require('crypto');
 module.exports = (db, hashPw) => {
   if (process.env.SEED_TESTE === '0') return;
+  if (process.env.CODESPACES !== 'true') return; // so no Codespaces, nunca na VPS
   const contas = [
     ['usuario', 'Usuario Teste', 'usuario', 'user'],
     ['adm', 'Admin Teste', 'adm', 'admin'],
