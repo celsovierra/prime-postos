@@ -4,7 +4,7 @@ module.exports = (app, db, h) => {
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     cidade TEXT, tipo TEXT, nome TEXT, telefone TEXT, ativo INTEGER DEFAULT 1)`);
   const limpa = (t, n) => String(t == null ? '' : t).trim().slice(0, n);
-  const TIPOS = ['guincho', 'chaveiro', 'telefones'];
+  const TIPOS = ['guincho', 'chaveiro', 'telefones', 'borracheiro', 'mecanico', 'farmacia'];
   const NACIONAIS = [
     { id: 0, nome: 'Polícia Militar', telefone: '190' },
     { id: 0, nome: 'SAMU', telefone: '192' },
