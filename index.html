@@ -356,5 +356,9 @@ if(c)c.addEventListener("change",function(){if(cur&&!document.getElementById("vi
 if(u)u.addEventListener("change",function(){if(cur&&!document.getElementById("viewServ").classList.contains("hide"))setTimeout(carrega,300)});
 })();
 </script>
+<script id="abreLista">
+(function(){function abre(){var b=document.querySelector("#tiles button[data-v=\"comb\"]");if(b&&b.className!=="on")b.click()}
+if(document.readyState==="complete")setTimeout(abre,300);else window.addEventListener("load",function(){setTimeout(abre,300)})})();
+</script>
 </body>
 </html>
