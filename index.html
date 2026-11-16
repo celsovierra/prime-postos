@@ -149,6 +149,14 @@ nav{left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 10px);pad
   header.top a,header.top button{font-size:.8rem;padding:8px 12px}
   #btnPainel{display:inline-block !important}
 }
+</style><style id="headerIcone">
+@media (max-width:768px){
+  #btnConta.conta{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;min-width:40px;padding:0!important;border-radius:50%;font-size:1.2rem;overflow:hidden}
+  #btnConta.conta small{display:none!important}
+  #btnConta.conta.on{background:#e8f5ee!important;border:2px solid #22c55e!important;padding:0!important;width:40px;height:40px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center}
+  #btnConta.conta.on small,#btnConta.conta.on .txtConta{display:none!important}
+  #btnConta.conta.on::before{content:"";display:block;width:24px;height:24px;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%233b82f6'><path d='M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0 2c-5 0-9 2.5-9 5.5V22h18v-2.5c0-3-4-5.5-9-5.5z'/></svg>") center/contain no-repeat}
+}
 </style></head>
 <body>
 <header>
@@ -252,13 +260,14 @@ btn.onclick=buscar;inp.onkeydown=function(e){if(e.key==="Enter")buscar()};
 var $=function(i){return document.getElementById(i)},cad=false;window.me=null;
 function api(u,b){return fetch(u,{method:b?"POST":"GET",headers:{"Content-Type":"application/json"},body:b?JSON.stringify(b):undefined}).then(function(r){return r.json().then(function(d){return{ok:r.ok,d:d}})})}
 function pintar(){var m=window.me,b=$("btnConta");
-if(m){b.className="conta on";b.textContent="Sair ("+m.name.split(" ")[0]+")";if(m.role==="admin"){var t=document.createElement("small");t.textContent="ADMIN";b.appendChild(t)}}
+if(m){b.className="conta on";b.innerHTML="<span class=\"txtConta\">Sair ("+m.name.split(" ")[0]+")</span>";if(m.role==="admin"){var t=document.createElement("small");t.textContent="ADMIN";t.className="txtConta";b.appendChild(t)}}
 else{b.className="conta";b.textContent="Entrar"}
 document.dispatchEvent(new Event("me"))}
 function carregar(){api("/api/me").then(function(x){window.me=x.d;pintar()})}
 function abrir(){cad=false;modo();$("mMsg").textContent="";$("modal").className=""}
 function modo(){$("mTit").textContent=cad?"Criar conta":"Entrar";$("mOk").textContent=cad?"Cadastrar":"Entrar";$("mTroca").textContent=cad?"Já tenho conta":"Criar conta";$("mNome").className=cad?"":"hide"}
-$("btnConta").onclick=function(){if(window.me){api("/api/logout",{}).then(carregar)}else abrir()};
+$("btnConta").onclick=function(){if(!window.me){abrir();return}if(window.innerWidth<=768){abrirConta()}else{api("/api/logout",{}).then(carregar)}};
+function abrirConta(){var m=window.me;var h="<h3>Minha conta</h3><p><b>"+m.name+"</b></p><p class='s'>"+m.email+" · "+(m.role==="admin"?"Administrador":m.role==="owner"?"Dono de posto":"Usuário")+"</p><button class='btn' id='cSair' type='button'>Sair</button><button class='btn' id='cFechar' type='button' style='background:#eef1f5;color:#14181f'>Fechar</button>";var d=document.createElement("div");d.id="contaModal";d.style="position:fixed;inset:0;background:#0008;display:flex;align-items:flex-end;justify-content:center;z-index:9999";d.innerHTML="<div style='background:var(--card);color:var(--text);border-radius:20px 20px 0 0;padding:20px;width:100%;max-width:480px;box-sizing:border-box'>"+h+"</div>";document.body.appendChild(d);d.onclick=function(e){if(e.target===d)d.remove()};d.querySelector("#cSair").onclick=function(){d.remove();api("/api/logout",{}).then(carregar)};d.querySelector("#cFechar").onclick=function(){d.remove()}}
 $("mFecha").onclick=function(){$("modal").className="hide"};
 $("mTroca").onclick=function(){cad=!cad;modo()};
 $("mOk").onclick=function(){
