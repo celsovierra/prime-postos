@@ -54,6 +54,15 @@ CREATE TABLE IF NOT EXISTS owners(user_id INTEGER PRIMARY KEY, paid_until TEXT, 
     res.json({ ok: true });
   });
 
+  app.post('/api/admin/donos/:id/data', h.requireAdmin, (req, res) => {
+    const id = Number(req.params.id);
+    const b = req.body || {};
+    const paid = String(b.paid_until || '').slice(0,10);
+    const active = b.active != null ? Number(b.active) : 1;
+    if (!id || !paid) return res.status(400).json({ erro: 'informe a data' });
+    const r = db.prepare('UPDATE owners SET paid_until=?, active=? WHERE id=?').run(paid, active, id);
+    res.json({ ok: r.changes });
+  });
   app.get('/api/admin/donos', h.requireAdmin, (req, res) => {
     res.json(db.prepare(`SELECT u.id, u.name, u.email, o.paid_until, o.active,
       (SELECT COUNT(*) FROM stations s WHERE s.owner_id = u.id) AS postos

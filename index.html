@@ -132,7 +132,16 @@ nav{left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 10px);pad
 <style id="tilesNove">@media(min-width:768px){.tiles{grid-template-columns:repeat(5,1fr)!important;gap:8px!important}.tiles button{font-size:.68rem!important;padding:7px 2px!important}}</style>
 <style id="tilesLinha">@media(min-width:768px){.tiles,#tabMapa>.tiles{display:flex!important;flex-wrap:nowrap!important;overflow-x:scroll!important;overflow-y:hidden!important;gap:8px!important;scrollbar-width:thin!important;scrollbar-color:#22c55e transparent;padding-bottom:6px!important;max-width:100%}.tiles::-webkit-scrollbar{display:block!important;height:5px}.tiles::-webkit-scrollbar-thumb{background:#22c55e;border-radius:4px}.tiles button{flex:0 0 calc((100% - 32px)/5)!important;min-width:0}}</style>
 <style id="tilesSnap">@media(max-width:767px){.tiles,#tabMapa>.tiles{scroll-snap-type:x mandatory!important;scroll-behavior:smooth;scroll-padding:0!important;overscroll-behavior-x:contain}.tiles button{scroll-snap-align:start!important;scroll-snap-stop:always}}@media(min-width:768px){.tiles,#tabMapa>.tiles{scroll-snap-type:x mandatory!important;scroll-padding:0!important}.tiles button{scroll-snap-align:start!important}}</style>
-</head>
+<style id="mobileUser">
+@media (max-width:768px){
+  .tiles button{font-size:.72rem;padding:8px 4px}
+  .card{padding:12px;border-radius:16px}
+  header{padding:12px 10px 16px}
+  .banner img{height:140px}
+  #list .card{padding:10px}
+  .pr{font-size:1.05rem}
+}
+</style></head>
 <body>
 <header>
 <div class="top"><h1>Abastece<b>+</b></h1><button id="btnConta" class="conta">Entrar</button></div>

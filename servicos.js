@@ -4,6 +4,7 @@ module.exports = (app, db, h) => {
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     cidade TEXT, tipo TEXT, nome TEXT, telefone TEXT, ativo INTEGER DEFAULT 1)`);
   const limpa = (t, n) => String(t == null ? '' : t).trim().slice(0, n);
+  try{ db.exec('ALTER TABLE servicos ADD COLUMN validade TEXT'); }catch(e){}
   const TIPOS = ['guincho', 'chaveiro', 'telefones', 'borracheiro', 'mecanico', 'farmacia'];
   const NACIONAIS = [
     { id: 0, nome: 'Polícia Militar', telefone: '190' },
@@ -14,7 +15,7 @@ module.exports = (app, db, h) => {
   app.get('/api/servicos', (req, res) => {
     const tipo = limpa(req.query.tipo, 20), cidade = limpa(req.query.city, 80);
     if (!TIPOS.includes(tipo)) return res.json([]);
-    const l = db.prepare('SELECT id,nome,telefone FROM servicos WHERE ativo=1 AND tipo=? AND cidade=? COLLATE NOCASE ORDER BY nome').all(tipo, cidade);
+    const l = db.prepare(`SELECT id,nome,telefone FROM servicos WHERE ativo=1 AND tipo=? AND cidade=? AND (validade IS NULL OR validade='' OR validade>=date('now')) COLLATE NOCASE ORDER BY nome`).all(tipo, cidade);
     res.json(tipo === 'telefones' ? NACIONAIS.concat(l) : l);
   });
   app.get('/api/admin/servicos', h.requireAdmin, (req, res) => {
@@ -23,8 +24,9 @@ module.exports = (app, db, h) => {
   app.post('/api/admin/servicos', h.requireAdmin, (req, res) => {
     const b = req.body || {};
     const cidade = limpa(b.cidade, 80), tipo = limpa(b.tipo, 20), nome = limpa(b.nome, 80), tel = limpa(b.telefone, 30);
+    const val = limpa(b.validade, 10);
     if (!cidade || !nome || !tel || !TIPOS.includes(tipo)) return res.status(400).json({ error: 'dados invalidos' });
-    const r = db.prepare('INSERT INTO servicos(cidade,tipo,nome,telefone) VALUES(?,?,?,?)').run(cidade, tipo, nome, tel);
+    const r = db.prepare('INSERT INTO servicos(cidade,tipo,nome,telefone,validade) VALUES(?,?,?,?,?)').run(cidade, tipo, nome, tel, val);
     res.json({ id: r.lastInsertRowid });
   });
   app.post('/api/admin/servicos/:id/apagar', h.requireAdmin, (req, res) => {

@@ -33,10 +33,28 @@ input,select{width:100%;background:var(--fld);color:var(--text);border:0;border-
 #msg,#msg2{color:var(--muted);font-size:.85rem;min-height:1em;margin-top:8px}
 .hide{display:none}
 </style><style id="abasAdm">#abas{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 14px;margin:0 auto;max-width:760px}#abas button{flex:0 0 auto;border:0;border-radius:999px;padding:10px 16px;font:inherit;font-weight:700;font-size:.85rem;cursor:pointer;background:#fff;color:#111;box-shadow:0 2px 8px rgba(0,0,0,.08);white-space:nowrap}#abas button.on{background:linear-gradient(135deg,#15803d,#22c55e);color:#fff}</style>
-</head><body>
+<style id="filtroH">.filtrosH{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 12px;-webkit-overflow-scrolling:touch}.filtrosH button{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:4px;border:0;background:var(--fld);color:var(--text);border-radius:16px;padding:10px 10px 8px;min-width:74px;font:inherit;font-size:.72rem;font-weight:700;cursor:pointer}.filtrosH button.on{background:linear-gradient(135deg,#15803d,#22c55e);color:#fff}.filtrosH button img{width:32px;height:32px;border-radius:50%;object-fit:cover}.filtrosH button svg{width:32px;height:32px}</style><style id="fixaServ">.card.fixaServ{display:flex;flex-direction:column;height:calc(100vh - 190px);min-height:320px;overflow:hidden}.card.fixaServ #servLista{flex:1;overflow-y:auto;padding-right:4px}.card.fixaServ #postos{flex:1;overflow-y:auto;padding-right:4px}.card.fixaServ .filtrosH,.card.fixaServ #svAbrirForm,.card.fixaServ > p.s,.card.fixaServ > label,.card.fixaServ > h2{flex:0 0 auto}</style><style id="mobileAdm">
+@media (max-width:768px){
+  main{padding:12px 10px 30px;max-width:100%}
+  header{padding:14px 12px 18px;border-radius:0 0 20px 20px}
+  h1{font-size:1.2rem}
+  header a{font-size:.75rem;padding:6px 10px}
+  .card{border-radius:18px;padding:14px;margin-bottom:14px}
+  h2{font-size:1rem}
+  input,select{padding:12px 14px;font-size:1rem}
+  .btn{padding:13px;font-size:.95rem}
+  #abas button{font-size:.8rem;padding:8px 12px}
+  .filtrosH button{min-width:64px;padding:8px;font-size:.68rem}
+  .filtrosH button svg,.filtrosH button img{width:28px;height:28px}
+  .mini{font-size:.75rem;padding:6px 10px}
+  .post div b{font-size:.95rem}
+  .post .s{font-size:.75rem}
+  .grid{grid-template-columns:1fr 1fr;gap:6px}
+}
+</style></head><body>
 <header><h1>Abastece<b>+</b> · Admin</h1><a href="/">Voltar ao site</a></header>
 <main>
-<nav id="abas"><button data-t="Convidar dono de posto">Convidar</button><button data-t="Donos de postos">Donos</button><button data-t="Novo posto">Novo posto</button><button data-t="Anúncios (patrocinadores)">Anúncios</button><button data-t="Postos e preços">Postos e preços</button></nav>
+<nav id="abas"><button data-t="Anúncios (patrocinadores)">Anúncios</button><button data-t="Serviços">Serviços</button></nav>
 <div id="negado" class="card hide"><h2>Acesso negado</h2><p class="s">Entre no site com a conta de administrador e abra esta página de novo.</p></div>
 <div id="app" class="hide">
 <div class="card"><h2>Convidar dono de posto</h2>
@@ -48,7 +66,8 @@ input,select{width:100%;background:var(--fld);color:var(--text);border:0;border-
 <div id="caixa" class="hide"><label>Link (vale 7 dias, uso único)</label><input id="lk" readonly><button class="btn" id="copiar" type="button">Copiar link</button></div>
 </div>
 <div class="card"><h2>Donos de postos</h2><div id="donos"><p class="s">Carregando…</p></div></div>
-<div class="card"><h2>Novo posto</h2>
+<div class="card"><h2>Anúncios (patrocinadores)</h2><p class="s">Aparecem no banner do site, na ordem abaixo. Foto: JPG, PNG ou WebP até 5 MB.</p><div id="ads"><p class="s">Carregando…</p></div><button class="btn" id="novoAd" type="button">Novo anúncio</button></div>
+<div class="card fixaServ"><button class="btn vServ" type="button" style="background:#eef1f5;color:#14181f;margin:0 0 12px">Voltar para Serviços</button><h2>Postos e preços</h2><button class="btn" id="pAbrirForm" type="button" style="margin:0 0 14px">Adicionar novo posto</button><div id="pForm" style="display:none;margin-bottom:16px"><button class="btn vServ" type="button" style="background:#eef1f5;color:#14181f;margin:0 0 12px">Voltar para Serviços</button><button class="btn" id="pFecharForm" type="button" style="background:#eef1f5;color:#14181f;margin:0 0 12px">Voltar para a lista</button><button class="btn" id="addPosto2" type="button" style="margin:0 0 14px">Criar posto</button>
 <label>Nome do posto</label><input id="pNome" maxlength="80">
 <label>Bandeira</label><input id="pBand" maxlength="40" placeholder="Ipiranga, Shell, Branca…">
 <label>Endereço</label><input id="pEnd" maxlength="160">
@@ -56,12 +75,10 @@ input,select{width:100%;background:var(--fld);color:var(--text);border:0;border-
 <label>Latitude</label><input id="pLat" inputmode="decimal" placeholder="-5.0892">
 <label>Longitude</label><input id="pLng" inputmode="decimal" placeholder="-42.8019">
 <p class="s">Dica: no Google Maps, clique com o botão direito no posto e toque nos números para copiar as coordenadas.</p>
-<label>Dono</label><select id="novoDono"><option value="">Sem dono</option></select>
+<label>Dono</label><select id="novoDono"><option value="">Sem dono</option></select><label>Expira em (validade do dono)</label><input id="pDonoVal" type="date">
 <button class="btn" id="addPosto" type="button">Criar posto</button>
 <p id="msg2"></p>
-</div>
-<div class="card"><h2>Anúncios (patrocinadores)</h2><p class="s">Aparecem no banner do site, na ordem abaixo. Foto: JPG, PNG ou WebP até 5 MB.</p><div id="ads"><p class="s">Carregando…</p></div><button class="btn" id="novoAd" type="button">Novo anúncio</button></div>
-<div class="card"><h2>Postos e preços</h2><div id="postos"><p class="s">Carregando…</p></div></div>
+<button class="btn" id="pFecharForm" type="button" style="background:#eef1f5;color:#14181f">Fechar</button></div><div id="postoEdit" style="display:none"></div><div id="postos"><p class="s">Carregando…</p></div></div><div class="card fixaServ"><h2>Serviços</h2><p class="s">Guincho, chaveiro, mecânico, borracheiro, farmácia e telefones úteis por cidade. Aparecem na tela do usuário ao escolher a cidade.</p><label>Filtrar por tipo</label><div class="filtrosH" id="svFiltro"><button type="button" data-v="" class="on">Todos</button><button type="button" data-v="postos"><svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><circle cx="24" cy="24" r="24" fill="#ef4444"/><rect x="13" y="36" width="18" height="3" rx="1.5" fill="#fff"/><rect x="15" y="11" width="14" height="26" rx="2.5" fill="#fff"/><rect x="18" y="15" width="8" height="7" rx="1" fill="#fca5a5"/><path d="M29 18h3a3 3 0 0 1 3 3v9a2 2 0 0 0 4 0V20l-4-4" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Postos</button><button type="button" data-v="guincho"><svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><circle cx="24" cy="24" r="24" fill="#f59e0b"/><rect x="12" y="13.5" width="5" height="2.5" rx="1" fill="#ef4444"/><path d="M7 32V23l4-5.5h8.5V32z" fill="#fff"/><path d="M10.5 23.5l2.4-3.5h4.6v3.5z" fill="#93c5fd"/><rect x="20" y="28" width="22" height="3.5" rx="1" fill="#fff"/><path d="M26 22.5l2.4-4h6.2l2.6 4z" fill="#1f2937"/><rect x="23" y="22.5" width="17" height="5" rx="1.8" fill="#1f2937"/><circle cx="14" cy="35.5" r="3.6" fill="#1f2937" stroke="#fff" stroke-width="1.5"/><circle cx="35" cy="35.5" r="3.6" fill="#1f2937" stroke="#fff" stroke-width="1.5"/></svg>Guincho</button><button type="button" data-v="chaveiro"><svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><circle cx="24" cy="24" r="24" fill="#facc15"/><g transform="rotate(-45 24 24) translate(-1.5 0)"><polygon points="26,24 29.5,17.5 37,17.5 41,24 37,30.5 29.5,30.5" fill="#111" stroke="#111" stroke-width="3" stroke-linejoin="round"/><circle cx="34" cy="24" r="3" fill="#facc15"/><rect x="8" y="21.2" width="19" height="5.6" fill="#111"/><rect x="10" y="26.5" width="3.4" height="3.2" fill="#111"/><rect x="16" y="26.5" width="3.4" height="4.8" fill="#111"/></g></svg>Chaveiro</button><button type="button" data-v="telefones"><svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><circle cx="24" cy="24" r="24" fill="#16a34a"/><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z" fill="#fff" transform="translate(10 10) scale(1.2)"/></svg>Telefones</button><button type="button" data-v="mecanico"><svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><circle cx="24" cy="24" r="24" fill="#0ea5e9"/><g transform="rotate(-45 24 24)"><rect x="21" y="17" width="6" height="22" rx="3" fill="#fff"/><circle cx="24" cy="14" r="7.5" fill="#fff"/></g></svg>Mecânico</button><button type="button" data-v="borracheiro"><svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><circle cx="24" cy="24" r="24" fill="#f97316"/><circle cx="24" cy="24" r="16" fill="#111827"/><circle cx="24" cy="24" r="9.5" fill="#e5e7eb"/><circle cx="24" cy="24" r="3" fill="#374151"/></svg>Borracheiro</button><button type="button" data-v="farmacia"><svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><circle cx="24" cy="24" r="24" fill="#0d9488"/><rect x="19.8" y="10" width="8.4" height="28" rx="2.4" fill="#fff"/><rect x="10" y="19.8" width="28" height="8.4" rx="2.4" fill="#fff"/></svg>Farmácia</button></div><button class="btn" id="svAbrirForm" type="button" style="margin:0 0 14px">Cadastrar serviço</button><div id="servLista"><p class="s">Carregando…</p></div><div id="svForm" style="display:none;margin-top:14px"><button class="btn vServ" type="button" style="background:#eef1f5;color:#14181f;margin:0 0 12px">Voltar para Serviços</button><h2>Novo serviço</h2><label>Cidade (formato: Teresina, PI)</label><input id="svCid" maxlength="80" value="Teresina, PI"><label>Tipo</label><select id="svTipo"><option value="guincho">Guincho</option><option value="chaveiro">Chaveiro</option><option value="mecanico">Mecânico</option><option value="borracheiro">Borracheiro</option><option value="farmacia">Farmácia 24h</option><option value="telefones">Telefones úteis</option></select><label>Nome</label><input id="svNome" maxlength="80"><label>Telefone (com DDD)</label><input id="svTel" maxlength="30" inputmode="tel"><label>Expira em (deixe vazio = sem validade)</label><input id="svVal" type="date"><button class="btn" id="svAdd" type="button">Adicionar serviço</button><p id="svMsg"></p><button class="btn" id="svFecharForm" type="button" style="background:#eef1f5;color:#14181f">Fechar</button></div></div>
 </div>
 </main>
 <script>
@@ -82,22 +99,48 @@ return '<div class="item"><div class="grow"><b>'+esc(o.name)+'</b><div class="s"
 $("donos").onclick=function(e){var t=e.target.closest("button[data-a]");if(!t)return;
 var id=t.getAttribute("data-id"),corpo=t.getAttribute("data-a")==="renovar"?{add_days:30}:{active:Number(t.getAttribute("data-v"))};
 api("/api/admin/donos/"+id,corpo).then(carregarDonos).catch(erro)};
-function carregarPostos(){return api("/api/admin/postos").then(function(d){fuels=d.fuels;
-if(!d.postos.length){$("postos").innerHTML='<p class="s">Nenhum posto.</p>';return}
-$("postos").innerHTML=d.postos.map(function(p){var pr={};p.prices.forEach(function(x){pr[x.fuel]=x.price});
-var ops='<option value="">Sem dono</option>'+donos.map(function(o){return '<option value="'+o.id+'"'+(o.id===p.owner_id?" selected":"")+'>'+esc(o.name)+'</option>'}).join("");
+function carregarPostos(){return api("/api/admin/postos").then(function(d){fuels=d.fuels;window.__postos=d.postos;
+renderListaPostos();
+})}
+function renderListaPostos(){
+var lista=window.__postos||[];
+var box=$("postos");
+if(!lista.length){box.innerHTML='<p class="s">Nenhum posto.</p>';return}
+box.innerHTML=lista.map(function(p){
+var hoje=new Date().toISOString().slice(0,10);var od=(donos||[]).filter(function(o){return o.id===p.owner_id})[0];var exp=od&&(!od.active||(od.paid_until&&od.paid_until<hoje));var tag=exp?' <span class="st ruim">Expirado</span>':'';return '<div class="post" data-id="'+p.id+'" style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)"><div><b>'+esc(p.name)+'</b>'+tag+'<div class="s">'+esc(p.city||"")+' · '+esc(p.brand||"")+'</div></div><button class="mini pEditar" data-id="'+p.id+'" type="button" style="font-size:1.1rem;padding:6px 12px">✏️</button></div>'}).join("");
+}
+function abrirEdicaoPosto(id){
+var p=(window.__postos||[]).filter(function(x){return x.id===Number(id)})[0];if(!p)return;
+var pr={};p.prices.forEach(function(x){pr[x.fuel]=x.price});
+var od=(donos||[]).filter(function(o){return o.id===p.owner_id})[0];var ops='<option value="">Sem dono</option>'+donos.map(function(o){return '<option value="'+o.id+'"'+(o.id===p.owner_id?" selected":"")+'>'+esc(o.name)+'</option>'}).join("");
 var campos=fuels.map(function(f){return '<div class="pf"><label>'+esc(f)+'</label><div class="row"><input inputmode="decimal" placeholder="0,00" value="'+(pr[f]!=null?String(pr[f]).replace(".",","):"")+'"><button class="mini" data-a="preco" data-f="'+esc(f)+'">OK</button></div></div>'}).join("");
-return '<div class="post" data-id="'+p.id+'"><b>'+esc(p.name)+'</b><div class="s">'+esc(p.city||"")+' · '+esc(p.brand||"")+'</div><div class="grid">'+campos+'</div><div class="row2"><select data-a="dono">'+ops+'</select><button class="mini" data-a="promo" data-v="'+(p.promo?0:1)+'">'+(p.promo?"Tirar promoção":"Pôr em promoção")+'</button><button class="mini warn" data-a="apagar">Apagar</button></div></div>'}).join("")})}
-$("postos").onclick=function(e){var t=e.target.closest("button[data-a]");if(!t)return;
-var id=t.closest(".post").getAttribute("data-id"),a=t.getAttribute("data-a");
-if(a==="preco"){api("/api/admin/preco",{station_id:Number(id),fuel:t.getAttribute("data-f"),price:t.closest(".pf").querySelector("input").value}).then(function(){t.textContent="Salvo";setTimeout(function(){t.textContent="OK"},1200)}).catch(erro)}
-else if(a==="promo"){api("/api/admin/postos/"+id,{promo:Number(t.getAttribute("data-v"))}).then(carregarPostos).catch(erro)}
-else if(a==="apagar"){if(confirm("Apagar este posto e seus preços?"))api("/api/admin/postos/"+id+"/apagar",{}).then(carregarPostos).catch(erro)}};
-$("postos").onchange=function(e){var s=e.target;if(s.getAttribute("data-a")!=="dono")return;
-api("/api/admin/postos/"+s.closest(".post").getAttribute("data-id"),{owner_id:s.value?Number(s.value):null}).then(carregarDonos).catch(erro)};
+var html='<div class="post" data-id="'+p.id+'"><button class="btn pVoltar" type="button" style="background:#eef1f5;color:#14181f;margin:0 0 12px">Voltar para a lista</button>'
++'<b>'+esc(p.name)+'</b><div class="s">'+esc(p.city||"")+' · '+esc(p.brand||"")+'</div>'
++'<div class="grid">'+campos+'</div>'
++'<div class="row2"><select data-a="dono">'+ops+'</select><button class="mini" data-a="promo" data-v="'+(p.promo?0:1)+'">'+(p.promo?"Tirar promoção":"Pôr em promoção")+'</button><button class="mini warn" data-a="apagar">Apagar</button></div>'+(od?('<div style="margin-top:12px;padding:12px;background:var(--fld);border-radius:16px"><p class="s" style="margin:0 0 6px">Assinatura do dono: <b>'+esc(od.name)+'</b></p><label>Expira em (data da assinatura)</label><div class="row"><input type="date" class="pData" value="'+esc(od.paid_until||"")+'"><button class="mini pSalvarData" data-owner="'+od.id+'" type="button">Salvar</button></div></div>'):'<p class="s" style="margin-top:8px">Este posto não tem dono vinculado.</p>')+'</div>';
+$("postoEdit").innerHTML=html;
+$("postos").style.display="none";
+var abrir=$("pAbrirForm");if(abrir)abrir.style.display="none";
+$("postoEdit").style.display="block";
+}
+document.addEventListener("click",function(e){
+if(e.target.classList&&e.target.classList.contains("pEditar")){abrirEdicaoPosto(e.target.getAttribute("data-id"));return}
+if(e.target.classList&&e.target.classList.contains("pSalvarData")){var wrap=e.target.closest(".post");var dt=wrap.querySelector(".pData").value;if(!dt){alert("Escolha uma data válida no calendário.");return;}var ow=e.target.getAttribute("data-owner");api("/api/admin/donos/"+ow+"/data",{paid_until:dt,active:1}).then(function(){e.target.textContent="Salvo";setTimeout(function(){e.target.textContent="Salvar"},1000);return carregarDonos()}).then(carregarPostos).catch(erro);return}
+if(e.target.classList&&e.target.classList.contains("pVoltar")){$("postoEdit").style.display="none";$("postoEdit").innerHTML="";$("postos").style.display="";var ab=$("pAbrirForm");if(ab)ab.style.display="";return}
+});
+document.addEventListener("click",function(e){var t=e.target.closest("button[data-a]");if(!t)return;var wrap=t.closest(".post");if(!wrap||wrap.parentElement.id!=="postoEdit")return;
+var id=wrap.getAttribute("data-id"),a=t.getAttribute("data-a");
+if(a==="preco"){api("/api/admin/preco",{station_id:Number(id),fuel:t.getAttribute("data-f"),price:t.closest(".pf").querySelector("input").value}).then(function(){t.textContent="Salvo";setTimeout(function(){t.textContent="OK"},1200);return carregarPostos()}).then(function(){$("postoEdit").style.display="none";$("postoEdit").innerHTML="";$("postos").style.display="";var ab=$("pAbrirForm");if(ab)ab.style.display=""}).catch(erro)}
+else if(a==="promo"){api("/api/admin/postos/"+id,{promo:Number(t.getAttribute("data-v"))}).then(carregarPostos).then(function(){abrirEdicaoPosto(id)}).catch(erro)}
+else if(a==="apagar"){if(confirm("Apagar este posto e seus preços?"))api("/api/admin/postos/"+id+"/apagar",{}).then(function(){$("postoEdit").style.display="none";$("postos").style.display="";return carregarPostos()}).catch(erro)}});
+document.addEventListener("change",function(e){var s=e.target;if(s.getAttribute("data-a")!=="dono")return;var wrap=s.closest(".post");if(!wrap||wrap.parentElement.id!=="postoEdit")return;
+api("/api/admin/postos/"+wrap.getAttribute("data-id"),{owner_id:s.value?Number(s.value):null}).then(carregarDonos).catch(erro)});
+$("addPosto2").onclick=function(){document.getElementById("addPosto").click()};
 $("addPosto").onclick=function(){$("msg2").textContent="";
-api("/api/admin/postos",{name:$("pNome").value,brand:$("pBand").value,address:$("pEnd").value,city:$("pCid").value,lat:$("pLat").value,lng:$("pLng").value,owner_id:$("novoDono").value||null})
-.then(function(){["pNome","pBand","pEnd","pLat","pLng"].forEach(function(i){$(i).value=""});$("msg2").textContent="Posto criado.";return carregarDonos()}).then(carregarPostos).catch(function(x){$("msg2").textContent=x.message})};
+var owId=$("novoDono").value||null;var val=$("pDonoVal").value;
+var pCriar=api("/api/admin/postos",{name:$("pNome").value,brand:$("pBand").value,address:$("pEnd").value,city:$("pCid").value,lat:$("pLat").value,lng:$("pLng").value,owner_id:owId});
+if(owId&&val){pCriar=pCriar.then(function(){return api("/api/admin/donos/"+owId+"/data",{paid_until:val,active:1})})}
+pCriar.then(function(){["pNome","pBand","pEnd","pLat","pLng","pDonoVal"].forEach(function(i){$(i).value=""});$("msg2").textContent="Posto criado.";return carregarDonos()}).then(carregarPostos).catch(function(x){$("msg2").textContent=x.message})};
 $("gerar").onclick=function(){$("msg").textContent="";
 api("/api/admin/invites",{name:$("nome").value,email:$("email").value,days:$("dias").value}).then(function(d){$("lk").value=d.link;$("caixa").classList.remove("hide")}).catch(function(x){$("msg").textContent=x.message})};
 $("copiar").onclick=function(){var b=$("copiar");$("lk").select();
@@ -128,4 +171,40 @@ $("app").classList.remove("hide");carregarDonos().then(carregarPostos).then(carr
 })();
 </script>
 <script id="abasJs">(function(){var bs=document.querySelectorAll("#abas button");function cards(){return Array.prototype.filter.call(document.querySelectorAll("#app > .card"),function(c){return c.id!=="negado"})}function t(c){var h=c.querySelector("h2");return h?h.textContent.trim():""}function ir(n){cards().forEach(function(c){c.style.display=t(c)===n?"":"none"});bs.forEach(function(b){b.className=b.getAttribute("data-t")===n?"on":""})}bs.forEach(function(b){b.onclick=function(){ir(b.getAttribute("data-t"))}});ir(bs[0].getAttribute("data-t"))})();</script>
-</body></html>
+<script id="servicosAdm">
+(function(){
+var T={guincho:"Guincho",chaveiro:"Chaveiro",mecanico:"Mecânico",borracheiro:"Borracheiro",farmacia:"Farmácia 24h",telefones:"Telefones úteis"};
+function esc(t){return String(t==null?"":t).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function api(url,body){var o=body===undefined?{}:{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)};
+return fetch(url,o).then(function(r){return r.json().catch(function(){return{}}).then(function(d){if(!r.ok)throw new Error((d&&d.erro)||("Erro "+r.status));return d})})}
+function carregar(){
+var box=document.getElementById("servLista");if(!box)return;
+var ft=document.getElementById("svFiltro");var fa=ft?ft.querySelector("button.on"):null;var fv=fa?fa.getAttribute("data-v"):"";
+api("/api/admin/servicos").then(function(l){
+if(fv)l=l.filter(function(x){return x.tipo===fv});
+if(!l.length){box.innerHTML='<p class="s">Nenhum serviço cadastrado ainda.</p>';return}
+box.innerHTML=l.map(function(x){return '<div class="item"><div class="grow"><b>'+esc(T[x.tipo]||x.tipo)+'</b> · '+esc(x.nome)+'<div class="s">'+esc(x.cidade)+' · '+esc(x.telefone)+(x.validade?' · até '+esc(x.validade.split('-').reverse().join('/')):'')+(x.validade&&x.validade<new Date().toISOString().slice(0,10)?' <span class="st ruim">Expirado</span>':'')+'</div></div><div class="acts"><button class="mini warn svAp" data-id="'+x.id+'" type="button">Apagar</button></div></div>'}).join("");
+}).catch(function(e){box.innerHTML='<p class="s">Erro: '+esc(e.message)+'</p>'})}
+document.addEventListener("click",function(e){
+var b=e.target;
+if(b.classList&&b.classList.contains("vServ")){var cards=document.querySelectorAll("#app > .card");cards.forEach(function(c){c.style.display="none"});var svCard=document.getElementById("servLista")?document.getElementById("servLista").closest(".card"):null;if(svCard)svCard.style.display="";var ft=document.getElementById("svFiltro");if(ft){var bt=ft.querySelector("button[data-v='']");if(bt){ft.querySelectorAll("button").forEach(function(x){x.classList.remove("on")});bt.classList.add("on")}}var lst=document.getElementById("servLista");if(lst)lst.style.display="";var frm=document.getElementById("svAbrirForm");if(frm)frm.style.display="";var boxF=document.getElementById("svForm");if(boxF)boxF.style.display="none";carregar();return}
+if(b.id==="svAbrirForm"){document.getElementById("svForm").style.display="block";b.style.display="none";return}
+if(b.id==="svFecharForm"){document.getElementById("svForm").style.display="none";document.getElementById("svAbrirForm").style.display="";return}
+if(b.id==="pAbrirForm"){document.getElementById("pForm").style.display="block";b.style.display="none";var sc=document.querySelectorAll("#app > .card");sc.forEach(function(c){if(c!==b.closest(".card"))c.style.display="none"});return}
+if(b.id==="pFecharForm"){document.getElementById("pForm").style.display="none";document.getElementById("pAbrirForm").style.display="";var sc2=document.querySelectorAll("#app > .card");sc2.forEach(function(c){c.style.display=""});return}
+if(b.id==="svAdd"){
+var m=document.getElementById("svMsg");
+var c=document.getElementById("svCid").value.trim(),t=document.getElementById("svTipo").value,n=document.getElementById("svNome").value.trim(),tel=document.getElementById("svTel").value.trim();
+if(!c||!n||!tel){m.textContent="Preencha cidade, nome e telefone.";return}
+api("/api/admin/servicos",{cidade:c,tipo:t,nome:n,telefone:tel,validade:(document.getElementById("svVal").value||"")}).then(function(){m.textContent="Adicionado.";document.getElementById("svNome").value="";document.getElementById("svTel").value="";document.getElementById("svVal").value="";carregar()}).catch(function(e){m.textContent="Erro: "+e.message})}
+if(b.classList&&b.classList.contains("svAp")){
+if(!confirm("Apagar este serviço?"))return;
+api("/api/admin/servicos/"+b.getAttribute("data-id")+"/apagar",{}).then(carregar).catch(function(e){alert(e.message)})}
+});
+var ft2=document.getElementById("svFiltro");if(ft2){ft2.addEventListener("click",function(e){var b=e.target.closest("button[data-v]");if(!b)return;ft2.querySelectorAll("button").forEach(function(x){x.classList.remove("on")});b.classList.add("on");var v=b.getAttribute("data-v");var lst=document.getElementById("servLista"),frm=document.getElementById("svAbrirForm"),boxF=document.getElementById("svForm"),postosBox=document.getElementById("postos");if(v==="postos"){if(lst)lst.style.display="none";if(frm)frm.style.display="none";if(boxF)boxF.style.display="none";var cardP=postosBox?postosBox.closest(".card"):null;if(cardP){cardP.style.display="";cardP.scrollIntoView({behavior:"smooth"})}return}if(lst)lst.style.display="";if(frm)frm.style.display="";var cardP2=postosBox?postosBox.closest(".card"):null;if(cardP2&&v!=="postos")cardP2.style.display="none";var st=document.getElementById("svTipo");if(st&&v)st.value=v;carregar()})}
+var pb=document.getElementById("postos");if(pb){var cp=pb.closest(".card");if(cp)cp.style.display="none"}
+setTimeout(function(){var cards=document.querySelectorAll("#app > .card");cards.forEach(function(c){if(c.querySelector("h2")&&c.querySelector("h2").textContent.indexOf("Postos e")===0)c.style.display="none"})},500);
+var svCard=document.getElementById("servLista").closest(".card");var pCard=document.getElementById("postos").closest(".card");var ft3=document.getElementById("svFiltro");if(ft3){ft3.addEventListener("click",function(e){var b=e.target.closest("button[data-v]");if(!b)return;var v=b.getAttribute("data-v");if(v==="postos"){if(svCard)svCard.style.display="none";if(pCard)pCard.style.display="";}else{if(pCard)pCard.style.display="none";if(svCard)svCard.style.display="";}})}
+var tt=setInterval(function(){if(document.getElementById("servLista")&&document.getElementById("app")&&!document.getElementById("app").classList.contains("hide")){clearInterval(tt);carregar()}},400);
+})();
+</script></body></html>
