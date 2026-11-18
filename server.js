@@ -27,7 +27,18 @@ app.get('/api/stations', (req, res) => {
   const pr = db.prepare('SELECT fuel, price FROM prices WHERE station_id=?');
   res.json(rows.map(s => ({ ...s, prices: Object.fromEntries(pr.all(s.id).map(x => [x.fuel, x.price])) })));
 });
-app.get('/', (q, r) => r.sendFile(__dirname + '/index.html'));
+app.get('/', (q, r) => {
+  const ua = q.headers['user-agent'] || '';
+  const ck = q.headers.cookie || '';
+  if (q.query.app === '1') r.setHeader('Set-Cookie', 'app=1; Path=/; Max-Age=31536000; SameSite=Lax');
+  if (q.query.app === '0') r.setHeader('Set-Cookie', 'app=0; Path=/; Max-Age=0; SameSite=Lax');
+  const isApp = q.query.app === '1' || (q.query.app !== '0' && (/; wv\)/.test(ua) || /(^|; )app=1/.test(ck)));
+  const web = __dirname + '/web.html';
+  console.log('[ROOT]', isApp ? 'APP' : 'WEB', '|', ua, '|', q.headers['x-requested-with'] || '-');
+  r.setHeader('Vary', 'User-Agent, Cookie');
+  r.setHeader('Cache-Control', 'no-cache');
+  r.sendFile(isApp || !require('fs').existsSync(web) ? __dirname + '/index.html' : web);
+});
 app.get('/patrocinadores.js', (q, r) => r.sendFile(__dirname + '/patrocinadores.js'));
 app.use('/img', express.static(__dirname + '/img'));
 app.listen(process.env.PORT || 8080, () => console.log('Rodando na porta 8080'));
