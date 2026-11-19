@@ -27,16 +27,7 @@ app.get('/api/stations', (req, res) => {
   const pr = db.prepare('SELECT fuel, price FROM prices WHERE station_id=?');
   res.json(rows.map(s => ({ ...s, prices: Object.fromEntries(pr.all(s.id).map(x => [x.fuel, x.price])) })));
 });
-app.get('/', (q, r) => {
-  const ua = q.headers['user-agent'] || '';
-  let isApp = /Mobi|Android|iPhone|iPad|iPod|; wv/i.test(ua);
-  if (q.query.web === '1') isApp = false;
-  if (q.query.app === '1') isApp = true;
-  const web = __dirname + '/web.html';
-  r.setHeader('Vary', 'User-Agent');
-  r.setHeader('Cache-Control', 'no-cache');
-  r.sendFile(isApp || !require('fs').existsSync(web) ? __dirname + '/index.html' : web);
-});
+app.get('/', (q, r) => r.sendFile(__dirname + '/index.html'));
 app.get('/patrocinadores.js', (q, r) => r.sendFile(__dirname + '/patrocinadores.js'));
 app.use('/img', express.static(__dirname + '/img'));
 app.listen(process.env.PORT || 8080, () => console.log('Rodando na porta 8080'));
