@@ -160,10 +160,11 @@ nav{left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 10px);pad
 </style><style id="logoCss">.top h1{display:flex!important;align-items:center!important;margin:0!important;line-height:0!important}#logoTop{height:56px!important;width:230px!important;max-width:58vw!important;object-fit:fill!important;display:block!important;mix-blend-mode:lighten!important}</style>
 <style id="btnChegar">#list .card{position:relative!important}#list .card .inf{padding-right:52px!important}#list .card .inf a{position:absolute!important;right:118px!important;top:50%!important;transform:translateY(-50%)!important;display:block!important;width:38px!important;height:38px!important;padding:0!important;margin:0!important;border-radius:50%!important;background:#2563eb url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 19v-6a3 3 0 0 1 3-3h8'/%3E%3Cpath d='M15 6.5L18.5 10 15 13.5'/%3E%3C/svg%3E") center/22px 22px no-repeat!important;color:transparent!important;font-size:0!important;overflow:visible!important;text-decoration:none!important;box-shadow:0 2px 8px rgba(37,99,235,.4)!important}#list .card .inf a::before{content:none!important}#list .card .inf a:active{transform:translateY(-50%) scale(.92)!important}#list .card .inf a[data-km]::after{content:attr(data-km)!important;position:absolute!important;top:100%!important;left:50%!important;transform:translateX(-50%)!important;margin-top:1px!important;font-size:.68rem!important;font-weight:700!important;line-height:1!important;color:var(--muted)!important;white-space:nowrap!important}</style>
 <style id="rotaServ">.svb{display:flex!important;align-items:center!important;gap:10px!important}.sv a.rota{display:block!important;flex:none!important;width:38px!important;height:38px!important;min-width:38px!important;padding:0!important;margin:0!important;border-radius:50%!important;background:#2563eb url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 19v-6a3 3 0 0 1 3-3h8'/%3E%3Cpath d='M15 6.5L18.5 10 15 13.5'/%3E%3C/svg%3E") center/22px 22px no-repeat!important;color:transparent!important;font-size:0!important;box-shadow:0 2px 8px rgba(37,99,235,.4)!important}</style>
+<style id="parcCss">#btnParceiro{margin:0 0 0 14px!important;padding:8px 14px!important;border-radius:999px!important;border:1.5px solid #22c55e!important;background:transparent!important;color:#22c55e!important;font-weight:700!important;font-size:.78rem!important;white-space:nowrap!important;cursor:pointer!important}#parcModal{display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.55);align-items:center;justify-content:center;padding:16px}#parcModal.on{display:flex}#parcBox{position:relative;width:100%;max-width:380px;background:var(--card,#fff);color:var(--text,#14181f);border-radius:22px;padding:22px 20px;box-shadow:0 20px 50px rgba(0,0,0,.35)}#parcBox h2{margin:0 0 4px;font-size:1.15rem}#parcBox p{margin:0 0 14px;font-size:.85rem;color:var(--muted,#667085)}#parcBox input{display:block;width:100%;box-sizing:border-box;margin:0 0 10px;padding:12px 14px;border:1px solid var(--line,#e3e6eb);border-radius:12px;background:transparent;color:inherit;font-size:16px}#parcEnv{width:100%;padding:13px;border:0;border-radius:999px;background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff;font-weight:700;font-size:1rem;cursor:pointer}#parcEnv:disabled{opacity:.6}#parcX{position:absolute;top:10px;right:12px;border:0;background:transparent;color:inherit;font-size:1.5rem;line-height:1;cursor:pointer}#parcMsg{min-height:1.2em;margin:0 0 10px;font-size:.85rem;font-weight:600}#parcMsg.err{color:#dc2626}#parcMsg.ok{color:#16a34a}</style>
 </head>
 <body>
 <header>
-<div class="top"><h1><img src="/img/logo.jpg" alt="Abastece+" id="logoTop"></h1><button id="btnConta" class="conta">Entrar</button></div>
+<div class="top"><h1><img src="/img/logo.jpg" alt="Abastece+" id="logoTop"></h1><button id="btnParceiro" type="button">Seja parceiro</button><button id="btnConta" class="conta">Entrar</button></div>
 
 </header>
 <main>
@@ -391,6 +392,27 @@ if(u)u.addEventListener("change",function(){if(cur&&!document.getElementById("vi
 <script id="abreLista">
 (function(){function abre(){var b=document.querySelector("#tiles button[data-v=\"comb\"]");if(b&&b.className!=="on")b.click()}
 if(document.readyState==="complete")setTimeout(abre,300);else window.addEventListener("load",function(){setTimeout(abre,300)})})();
+</script>
+<div id="parcModal"><div id="parcBox"><button id="parcX" type="button" aria-label="Fechar">×</button><h2>Seja um parceiro</h2><p>Deixe seus dados e entraremos em contato.</p><input id="parcNome" type="text" placeholder="Nome" maxlength="80" autocomplete="name"><input id="parcTel" type="tel" placeholder="Telefone com DDD" maxlength="30" autocomplete="tel"><input id="parcEmail" type="email" placeholder="E-mail" maxlength="120" autocomplete="email"><div id="parcMsg"></div><button id="parcEnv" type="button">Enviar</button></div></div>
+<script id="parcJs">
+(function(){
+var o=document.getElementById("parcModal"),b=document.getElementById("btnParceiro"),m=document.getElementById("parcMsg"),e=document.getElementById("parcEnv");
+function msg(t,k){m.textContent=t;m.className=k||""}
+function abre(){msg("");o.classList.add("on")}
+function fecha(){o.classList.remove("on")}
+b.addEventListener("click",abre);
+document.getElementById("parcX").addEventListener("click",fecha);
+o.addEventListener("click",function(ev){if(ev.target===o)fecha()});
+e.addEventListener("click",function(){
+var d={nome:document.getElementById("parcNome").value,telefone:document.getElementById("parcTel").value,email:document.getElementById("parcEmail").value};
+e.disabled=true;msg("Enviando…");
+fetch("/api/parceiros",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)})
+.then(function(r){return r.json().then(function(j){return{ok:r.ok,j:j}})})
+.then(function(x){e.disabled=false;
+if(x.ok){msg("Recebemos seus dados! Entraremos em contato.","ok");["parcNome","parcTel","parcEmail"].forEach(function(i){document.getElementById(i).value=""});setTimeout(fecha,2500)}
+else msg(x.j.erro||"Erro ao enviar.","err")})
+.catch(function(){e.disabled=false;msg("Erro de conexão. Tente de novo.","err")})});
+})();
 </script>
 </body>
 </html>

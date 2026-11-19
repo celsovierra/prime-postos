@@ -136,5 +136,6 @@ app.get('/admin', (q, r) => r.sendFile(__dirname + '/admin.html'));
 require('./painel')(app, db, { requireAdmin, getUser });
 require('./anuncios')(app, db, { requireAdmin });
 require('./servicos')(app, db, { requireAdmin });
+require('./parceiros')(app, db, { requireAdmin });
 app.get('/convite', (q, r) => r.sendFile(__dirname + '/convite.html'));
 app.get('/dono', (q, r) => r.sendFile(__dirname + '/dono.html'));
