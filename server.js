@@ -136,6 +136,8 @@ app.get('/admin', (q, r) => r.sendFile(__dirname + '/admin.html'));
 require('./painel')(app, db, { requireAdmin, getUser });
 require('./anuncios')(app, db, { requireAdmin });
 require('./servicos')(app, db, { requireAdmin });
+try{ db.exec('ALTER TABLE stations ADD COLUMN place_id TEXT'); }catch(e){}
 require('./parceiros')(app, db, { requireAdmin });
+require('./avaliar')(app, db);
 app.get('/convite', (q, r) => r.sendFile(__dirname + '/convite.html'));
 app.get('/dono', (q, r) => r.sendFile(__dirname + '/dono.html'));
