@@ -23,7 +23,7 @@ app.get('/api/cities', (req, res) => {
   res.json(db.prepare('SELECT * FROM cities').all());
 });
 app.get('/api/stations', (req, res) => {
-  const rows = db.prepare(`SELECT s.*, c.name city FROM stations s JOIN cities c ON c.id=s.city_id LEFT JOIN owners o ON o.id=s.owner_id WHERE c.name=? AND (s.owner_id IS NULL OR (o.active=1 AND (o.paid_until IS NULL OR o.paid_until>=date('now'))))`).all(req.query.city || '');
+  const rows = db.prepare(`SELECT s.*, c.name city FROM stations s JOIN cities c ON c.id=s.city_id LEFT JOIN owners o ON o.user_id=s.owner_id WHERE c.name=? AND (s.owner_id IS NULL OR (o.active=1 AND (o.paid_until IS NULL OR o.paid_until>=date('now'))))`).all(req.query.city || '');
   const pr = db.prepare('SELECT fuel, price FROM prices WHERE station_id=?');
   res.json(rows.map(s => ({ ...s, prices: Object.fromEntries(pr.all(s.id).map(x => [x.fuel, x.price])) })));
 });
