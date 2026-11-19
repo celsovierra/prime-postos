@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#10231b">
+<title>ABASTECE+ | Mobilidade, economia e benefícios</title>
+<meta name="description" content="Encontre postos, consulte a Tabela FIPE, descubra benefícios e serviços para seguir caminho com mais economia.">
+<style id="webBase">
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:#f4f7f5;color:#10231b;line-height:1.5}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+.wtop{position:sticky;top:0;z-index:50;background:rgba(16,35,27,.96);backdrop-filter:blur(8px)}
+.wtop .wrap{display:flex;align-items:center;justify-content:space-between;height:68px}
+.logo{display:flex;align-items:center;gap:10px;color:#fff;font-weight:800;font-size:20px;letter-spacing:.5px}
+.logo i{font-style:normal;display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:#22c55e;color:#06210f;font-weight:900}
+.logo b{color:#22c55e}
+.wnav{display:flex;gap:26px;align-items:center}
+.wnav a{color:#cfe3d8;font-size:15px}
+.wnav a:hover{color:#fff}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border-radius:999px;font-weight:700;font-size:15px;border:0;cursor:pointer}
+.btn-g{background:#22c55e;color:#06210f}
+.btn-o{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.35)}
+.burger{display:none;background:none;border:0;color:#fff;font-size:26px;cursor:pointer}
+.hero{background:radial-gradient(1200px 500px at 80% -10%,#1f6b45 0,#10231b 60%);color:#fff;padding:72px 0 80px}
+.hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
+.tag{color:#22c55e;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase}
+.hero h1{font-size:clamp(32px,5vw,54px);line-height:1.1;margin:14px 0 18px;font-weight:800}
+.hero p{color:#cfe3d8;font-size:18px;max-width:520px}
+.acts{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+.pnl{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:24px;padding:22px}
+.pnl small{display:flex;justify-content:space-between;color:#9fc4b0;font-size:12px;letter-spacing:.1em;font-weight:700}
+.ic3{display:flex;gap:12px;margin:18px 0}
+.ic3 span{flex:1;display:grid;place-items:center;height:64px;border-radius:16px;background:rgba(34,197,94,.15);font-size:26px}
+.pnl ul{list-style:none;padding:0;display:grid;gap:8px;color:#e6f2ea;font-size:15px}
+.pnl li b{color:#22c55e;margin-right:8px}
+@media(max-width:820px){.wnav,.wtop .btn{display:none}.burger{display:block}.hero .wrap{grid-template-columns:1fr}.wnav.open{display:flex;position:absolute;top:68px;left:0;right:0;flex-direction:column;align-items:flex-start;background:#10231b;padding:18px 20px;gap:16px}}
+</style>
+</head><body>
+<header class="wtop"><div class="wrap">
+<a href="#inicio" class="logo"><i>A+</i><span>ABASTECE<b>+</b></span></a>
+<nav class="wnav" id="wnav">
+<a href="#servicos">Serviços</a><a href="#fipe">Tabela FIPE</a><a href="#postos">Postos próximos</a><a href="#parceiros">Seja parceiro</a>
+</nav>
+<a href="#parceiros" class="btn btn-g">Quero ser parceiro ↗</a>
+<button class="burger" id="burger" aria-label="Menu">☰</button>
+</div></header>
+<section class="hero" id="inicio"><div class="wrap">
+<div>
+<div class="tag">Mobilidade • Economia • Benefícios</div>
+<h1>Tudo para o seu caminho. Em um só lugar.</h1>
+<p>Encontre serviços, consulte seu veículo e descubra oportunidades para dirigir com mais tranquilidade e economia.</p>
+<div class="acts"><a href="#servicos" class="btn btn-g">Explorar serviços ↗</a><a href="#postos" class="btn btn-o">Encontrar postos ⌖</a></div>
+</div>
+<div class="pnl">
+<small><span>PAINEL DO MOTORISTA</span><span>PLATAFORMA</span></small>
+<div class="ic3"><span>⛽</span><span>+</span><span>⌖</span></div>
+<ul><li><b>01</b>Postos e rotas</li><li><b>02</b>Consulta FIPE</li><li><b>03</b>Benefícios</li></ul>
+</div>
+</div></section>
+<!--FIM-->
+<script id="webMenu">
+document.getElementById('burger').onclick=function(){document.getElementById('wnav').classList.toggle('open')};
+document.querySelectorAll('#wnav a').forEach(function(a){a.onclick=function(){document.getElementById('wnav').classList.remove('open')}});
+</script>
+</body></html>
