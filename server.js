@@ -32,7 +32,7 @@ app.get('/', (q, r) => {
   const ck = q.headers.cookie || '';
   if (q.query.app === '1') r.setHeader('Set-Cookie', 'app=1; Path=/; Max-Age=31536000; SameSite=Lax');
   if (q.query.app === '0') r.setHeader('Set-Cookie', 'app=0; Path=/; Max-Age=0; SameSite=Lax');
-  const isApp = q.query.web !== '1' && (q.query.app === '1' || (q.query.app !== '0' && (/Mobile|Android|iPhone|iPad/i.test(ua) || /(^|; )app=1/.test(ck))));
+  const isApp = q.query.app === '1' || (q.query.app !== '0' && (/; wv\)/.test(ua) || /(^|; )app=1/.test(ck)));
   const web = __dirname + '/web.html';
   console.log('[ROOT]', isApp ? 'APP' : 'WEB', '|', ua, '|', q.headers['x-requested-with'] || '-');
   r.setHeader('Vary', 'User-Agent, Cookie');
