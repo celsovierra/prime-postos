@@ -5,7 +5,7 @@ module.exports = function (app, db, h) {
     return l.length ? l : ['gasolina', 'etanol', 'diesel', 'gnv'];
   };
   const postos = (where, arg) => {
-    const l = db.prepare('SELECT s.id, s.name, s.brand, s.address, s.promo, s.owner_id, c.name AS city FROM stations s LEFT JOIN cities c ON c.id = s.city_id ' + where + ' ORDER BY s.name').all(...arg);
+    const l = db.prepare('SELECT s.id, s.name, s.brand, s.address, s.promo, s.owner_id, s.place_id, c.name AS city FROM stations s LEFT JOIN cities c ON c.id = s.city_id ' + where + ' ORDER BY s.name').all(...arg);
     const p = db.prepare('SELECT fuel, price, updated_at FROM prices WHERE station_id=?');
     l.forEach(s => { s.prices = p.all(s.id); });
     return l;
@@ -61,8 +61,8 @@ module.exports = function (app, db, h) {
     db.prepare('INSERT OR IGNORE INTO cities(name,lat,lng) VALUES(?,?,?)').run(city, lat, lng);
     const c = db.prepare('SELECT id FROM cities WHERE name=?').get(city);
     const owner = b.owner_id ? Number(b.owner_id) : null;
-    const id = db.prepare('INSERT INTO stations(city_id,name,brand,address,lat,lng,promo,owner_id) VALUES(?,?,?,?,?,?,0,?)')
-      .run(c.id, name, String(b.brand || '').slice(0, 40), String(b.address || '').slice(0, 160), lat, lng, owner).lastInsertRowid;
+    const id = db.prepare('INSERT INTO stations(city_id,name,brand,address,lat,lng,promo,owner_id,place_id) VALUES(?,?,?,?,?,?,0,?,?)')
+      .run(c.id, name, String(b.brand || '').slice(0, 40), String(b.address || '').slice(0, 160), lat, lng, owner, String(b.place_id || '').trim().slice(0, 200) || null).lastInsertRowid;
     res.json({ id });
   });
 
@@ -71,6 +71,7 @@ module.exports = function (app, db, h) {
     const id = Number(req.params.id);
     if (!db.prepare('SELECT 1 FROM stations WHERE id=?').get(id)) return res.status(404).json({ erro: 'Posto não encontrado.' });
     if ('owner_id' in b) db.prepare('UPDATE stations SET owner_id=? WHERE id=?').run(b.owner_id ? Number(b.owner_id) : null, id);
+    if ('place_id' in b) db.prepare('UPDATE stations SET place_id=? WHERE id=?').run(String(b.place_id || '').trim().slice(0, 200) || null, id);
     if ('promo' in b) db.prepare('UPDATE stations SET promo=? WHERE id=?').run(b.promo ? 1 : 0, id);
     res.json({ ok: true });
   });
