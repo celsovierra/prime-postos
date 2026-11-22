@@ -5,6 +5,7 @@ module.exports = (app, db, h) => {
     nome TEXT, telefone TEXT, email TEXT,
     status TEXT DEFAULT 'novo',
     criado_em TEXT DEFAULT (datetime('now')))`);
+  for (const c of ["valor REAL DEFAULT 0","vencimento TEXT","pago TEXT DEFAULT 'nao'"]) { try { db.exec('ALTER TABLE parceiros ADD COLUMN '+c); } catch (e) {} }
   const limpa = (t, n) => String(t == null ? '' : t).trim().slice(0, n);
   const tent = {};
   app.post('/api/parceiros', (req, res) => {
@@ -28,6 +29,14 @@ module.exports = (app, db, h) => {
   app.post('/api/admin/parceiros/:id', h.requireAdmin, (req, res) => {
     const st = (req.body || {}).status === 'contatado' ? 'contatado' : 'novo';
     res.json({ ok: db.prepare('UPDATE parceiros SET status=? WHERE id=?').run(st, req.params.id).changes });
+  });
+  app.post('/api/admin/parceiros/:id/dados', h.requireAdmin, (req, res) => {
+    const b = req.body || {};
+    const st = ['novo','contatado','autorizado'].includes(b.status) ? b.status : 'novo';
+    const valor = Math.max(0, Number(b.valor) || 0);
+    const venc = /^\d{4}-\d{2}-\d{2}$/.test(b.vencimento || '') ? b.vencimento : null;
+    const pago = b.pago === 'sim' ? 'sim' : 'nao';
+    res.json({ ok: db.prepare('UPDATE parceiros SET status=?,valor=?,vencimento=?,pago=? WHERE id=?').run(st, valor, venc, pago, req.params.id).changes });
   });
   app.post('/api/admin/parceiros/:id/apagar', h.requireAdmin, (req, res) => {
     res.json({ ok: db.prepare('DELETE FROM parceiros WHERE id=?').run(req.params.id).changes });
