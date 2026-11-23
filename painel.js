@@ -2,7 +2,7 @@ module.exports = function (app, db, h) {
   const hoje = () => new Date().toISOString().slice(0, 10);
   const fuels = () => {
     const l = db.prepare('SELECT DISTINCT fuel FROM prices ORDER BY fuel').all().map(r => r.fuel);
-    return l.length ? l : ['gasolina', 'etanol', 'diesel', 'gnv'];
+    return ['gasolina','etanol','diesel','gnv'].concat(l.filter(function(x){return ['gasolina','etanol','diesel','gnv'].indexOf(x)<0}));
   };
   const postos = (where, arg) => {
     const l = db.prepare('SELECT s.id, s.name, s.brand, s.address, s.promo, s.owner_id, s.place_id, c.name AS city FROM stations s LEFT JOIN cities c ON c.id = s.city_id ' + where + ' ORDER BY s.name').all(...arg);

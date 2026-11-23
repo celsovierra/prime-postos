@@ -47,11 +47,11 @@ api("/api/dono/postos").then(function(d){
 $("app").classList.remove("hide");
 if(!d.postos.length){$("postos").innerHTML='<p class="s">Nenhum posto vinculado à sua conta ainda. Fale com o administrador.</p>';return}
 $("postos").innerHTML=d.postos.map(function(p){var pr={};p.prices.forEach(function(x){pr[x.fuel]=x.price});
-var campos=d.fuels.map(function(f){return '<div class="pf"><label>'+esc(f)+'</label><div class="row"><input inputmode="decimal" placeholder="0,00" value="'+(pr[f]!=null?String(pr[f]).replace(".",","):"")+'"><button class="mini" data-f="'+esc(f)+'">OK</button></div></div>'}).join("");
-return '<div class="post" data-id="'+p.id+'"><b>'+esc(p.name)+'</b><div class="s">'+esc(p.city||"")+' · '+esc(p.brand||"")+'</div><div class="grid">'+campos+'</div></div>'}).join("")
+var campos=d.fuels.map(function(f){return '<div class="pf" style="margin-top:10px"><label>'+esc(f)+'</label><input inputmode="numeric" data-f="'+esc(f)+'" placeholder="0,00" value="'+(pr[f]!=null?String(pr[f]).replace(".",","):"")+'"></div>'}).join("");
+return '<div class="post" data-id="'+p.id+'"><b>'+esc(p.name)+'</b><div class="s">'+esc(p.city||"")+' \u00b7 '+esc(p.brand||"")+'</div>'+campos+'<button class="mini salvarTudo" style="margin-top:14px;width:100%;padding:12px">Salvar tudo</button><div class="s msg" style="margin-top:8px;text-align:center"></div></div>'}).join("")
 }).catch(function(e){$("aviso").classList.remove("hide");$("txt").textContent=e.message});
-$("postos").onclick=function(e){var t=e.target.closest("button[data-f]");if(!t)return;
-var id=t.closest(".post").getAttribute("data-id");
-api("/api/dono/preco",{station_id:Number(id),fuel:t.getAttribute("data-f"),price:t.closest(".pf").querySelector("input").value}).then(function(){t.textContent="Salvo";setTimeout(function(){t.textContent="OK"},1200)}).catch(function(x){alert(x.message)})};
+$("postos").oninput=function(e){var i=e.target;if(!i.matches||!i.matches("input[data-f]"))return;var n=i.value.replace(/\D/g,"").replace(/^0+/,"").slice(0,4);if(!n){i.value="";return}while(n.length<3)n="0"+n;i.value=n.slice(0,-2)+","+n.slice(-2)};
+$("postos").onclick=function(e){var t=e.target.closest("button.salvarTudo");if(!t)return;var post=t.closest(".post"),id=post.getAttribute("data-id"),msg=post.querySelector(".msg");var ins=[].slice.call(post.querySelectorAll("input[data-f]")).filter(function(i){return i.value.trim()!==""});if(!ins.length){msg.textContent="Digite ao menos um pre\u00e7o.";return}t.disabled=true;t.textContent="Salvando...";
+Promise.all(ins.map(function(i){return api("/api/dono/preco",{station_id:Number(id),fuel:i.getAttribute("data-f"),price:i.value})})).then(function(){msg.textContent="\u2705 Pre\u00e7os salvos!";msg.style.color="#16a34a"}).catch(function(x){msg.textContent=x.message;msg.style.color="#dc2626"}).then(function(){t.disabled=false;t.textContent="Salvar tudo"})};
 })();
 </script></body></html>
