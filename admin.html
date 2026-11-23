@@ -264,7 +264,7 @@ function sit(x){if(!x.vencimento)return '<span class="al">Sem vencimento</span>'
 function brl(n){return "R$ "+(Number(n)||0).toFixed(2).replace(".",",")}
 
 function linhaP(x){return '<tr><td>'+e(x.nome)+'</td><td>'+br(x.criado_em)+'</td><td><a href="'+wa(x.telefone)+'" target="_blank">'+e(x.telefone)+'</a></td><td>'+e(x.email)+'</td><td>'+(x.status==="contatado"?"Contatado":"Novo")+'</td><td><button data-a="aut" data-id="'+x.id+'">Autorizar</button><button class="g" data-a="cont" data-id="'+x.id+'">Contatado</button><button class="r" data-a="del" data-id="'+x.id+'">Apagar</button></td></tr>'}
-function linhaA(x){return '<tr data-id="'+x.id+'"><td>'+e(x.nome)+'<br><a href="'+wa(x.telefone)+'" target="_blank">'+e(x.telefone)+'</a></td><td><select class="t">'+TP.map(function(t){return '<option value="'+t+'"'+(x.tipo===t?" selected":"")+'>'+t+'</option>'}).join("")+'</select></td><td><input type="number" step="0.01" min="0" class="v" value="'+(Number(x.valor)||0)+'"></td><td><input type="date" class="d" value="'+e(x.vencimento||"")+'"></td><td><select class="p"><option value="nao"'+(x.pago==="sim"?"":" selected")+'>Não pago</option><option value="sim"'+(x.pago==="sim"?" selected":"")+'>Pago</option></select></td><td>'+sit(x)+'</td><td><button data-a="salvar" data-id="'+x.id+'">Salvar</button><button data-a="renova" data-id="'+x.id+'">+30 dias</button><button class="g" data-a="pend" data-id="'+x.id+'">Voltar p/ pendente</button><button class="r" data-a="del" data-id="'+x.id+'">Apagar</button></td></tr>'}
+function linhaA(x){return '<tr data-id="'+x.id+'"><td>'+e(x.nome)+'<br><a href="'+wa(x.telefone)+'" target="_blank">'+e(x.telefone)+'</a></td><td><select class="t">'+TP.map(function(t){return '<option value="'+t+'"'+(x.tipo===t?" selected":"")+'>'+t+'</option>'}).join("")+'</select></td><td>'+(x.estab_nome?e(x.estab_nome):"nenhum")+' <button class="g" data-a="estab" data-id="'+x.id+'">Trocar</button></td><td><input type="number" step="0.01" min="0" class="v" value="'+(Number(x.valor)||0)+'"></td><td><input type="date" class="d" value="'+e(x.vencimento||"")+'"></td><td><select class="p"><option value="nao"'+(x.pago==="sim"?"":" selected")+'>Não pago</option><option value="sim"'+(x.pago==="sim"?" selected":"")+'>Pago</option></select></td><td>'+sit(x)+'</td><td><button data-a="salvar" data-id="'+x.id+'">Salvar</button><button data-a="renova" data-id="'+x.id+'">+30 dias</button>'+(x.tipo==="posto"&&/^posto:/.test(x.estab||"")?'<button data-a="link" data-id="'+x.id+'">🔗 Link</button>':'')+'<button class="g" data-a="pend" data-id="'+x.id+'">Voltar p/ pendente</button><button class="r" data-a="del" data-id="'+x.id+'">Apagar</button></td></tr>'}
 function desenha(){
 var pend=L.filter(function(x){return x.status!=="autorizado"});
 var aut=L.filter(function(x){return x.status==="autorizado"});
@@ -273,18 +273,51 @@ var recb=aut.filter(function(x){return x.pago!=="sim"}).reduce(function(s,x){ret
 var venc=aut.filter(function(x){return x.vencimento&&dias(x.vencimento)<0}).length;
 W.innerHTML='<div class="tot"><div>Pendentes: <b>'+pend.length+'</b></div><div>Autorizados: <b>'+aut.length+'</b></div><div>Recebido: <b>'+brl(rec)+'</b></div><div>A receber: <b>'+brl(recb)+'</b></div><div>Vencidos: <b>'+venc+'</b></div></div>'+
 '<h3>Pendentes</h3><div class="pl"><table><tr><th>Nome</th><th>Cadastro</th><th>WhatsApp</th><th>E-mail</th><th>Status</th><th>Ações</th></tr>'+(pend.map(linhaP).join("")||'<tr><td colspan="6">Nenhum pendente.</td></tr>')+'</table></div>'+
-'<h3>Autorizados</h3><div class="pl"><table><tr><th>Parceiro</th><th>Tipo</th><th>Valor (R$)</th><th>Vencimento</th><th>Pagamento</th><th>Situação</th><th>Ações</th></tr>'+(aut.map(linhaA).join("")||'<tr><td colspan="7">Nenhum autorizado.</td></tr>')+'</table></div>'
+'<h3>Autorizados</h3><div class="pl"><table><tr><th>Parceiro</th><th>Tipo</th><th>Estabelecimento</th><th>Valor (R$)</th><th>Vencimento</th><th>Pagamento</th><th>Situação</th><th>Ações</th></tr>'+(aut.map(linhaA).join("")||'<tr><td colspan="8">Nenhum autorizado.</td></tr>')+'</table></div>'
 }
 
 function carrega(){fetch("/api/admin/parceiros").then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(l){L=l;desenha();var B=document.querySelector('#abas button[data-t^="Parceiros"], #abas button');var n=l.filter(function(x){return x.status!=="autorizado"}).length;var bs=document.querySelectorAll("#abas button");bs.forEach(function(b){if(/^Parceiros/.test(b.textContent))b.textContent=n?"Parceiros ("+n+")":"Parceiros"})}).catch(function(){W.innerHTML='<p class="s">Sem acesso ou erro ao carregar.</p>'})}
-function escolheTipo(cb){var o=document.createElement("div");o.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:9999";o.innerHTML='<div style="background:#fff;border-radius:16px;padding:20px;width:300px;max-width:90vw"><h3 style="margin:0 0 10px">Tipo do estabelecimento</h3><select id="tpSel" style="width:100%;padding:10px;font:inherit;border:1px solid #cbd5e1;border-radius:10px">'+TP.map(function(t){return '<option value="'+t+'">'+t+'</option>'}).join("")+'</select><div style="display:flex;gap:8px;margin-top:14px"><button id="tpOk" style="flex:1;padding:10px;border:0;border-radius:10px;background:#16a34a;color:#fff;font:inherit;cursor:pointer">Autorizar</button><button id="tpNo" style="flex:1;padding:10px;border:0;border-radius:10px;background:#e5e7eb;font:inherit;cursor:pointer">Cancelar</button></div></div>';document.body.appendChild(o);o.querySelector("#tpNo").onclick=function(){o.remove()};o.querySelector("#tpOk").onclick=function(){var v=o.querySelector("#tpSel").value;o.remove();cb(v)}}
+function escolheTipo(cb,tipoIni){
+var o=document.createElement("div");
+o.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:9999";
+var st='width:100%;padding:10px;font:inherit;border:1px solid #cbd5e1;border-radius:10px;margin-bottom:8px;box-sizing:border-box';
+o.innerHTML='<div style="background:#fff;border-radius:16px;padding:20px;width:340px;max-width:92vw"><h3 style="margin:0 0 10px">Autorizar parceiro</h3>'+
+'<label>Tipo</label><select id="tpSel" style="'+st+'">'+TP.map(function(t){return '<option value="'+t+'">'+t+'</option>'}).join("")+'</select>'+
+'<label>Estabelecimento</label><select id="esSel" style="'+st+'"></select>'+
+'<div id="esNovo" style="display:none"><input id="nNome" placeholder="Nome" style="'+st+'"><select id="nUf" style="'+st+'"><option value="">Estado</option></select><select id="nCid" style="'+st+'"><option value="">Cidade</option></select><input id="nTel" placeholder="Telefone" style="'+st+'"><input id="nMapa" placeholder="Link de localização (https://...)" style="'+st+'"><label>Foto (JPG, PNG ou WebP, até 5 MB)</label><input id="nFoto" type="file" accept="image/jpeg,image/png,image/webp" style="'+st+'"></div>'+
+'<div style="display:flex;gap:8px;margin-top:8px"><button id="tpOk" style="flex:1;padding:10px;border:0;border-radius:10px;background:#16a34a;color:#fff;font:inherit;cursor:pointer">Autorizar</button><button id="tpNo" style="flex:1;padding:10px;border:0;border-radius:10px;background:#e5e7eb;font:inherit;cursor:pointer">Cancelar</button></div></div>';
+document.body.appendChild(o);
+var uS=o.querySelector("#nUf"),cS=o.querySelector("#nCid");
+fetch("https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome").then(function(r){return r.json()}).then(function(l){uS.innerHTML='<option value="">Estado</option>'+l.map(function(u){return '<option value="'+u.sigla+'" data-id="'+u.id+'">'+u.nome+'</option>'}).join("")}).catch(function(){});
+uS.onchange=function(){cS.innerHTML='<option value="">Cidade</option>';var op=uS.options[uS.selectedIndex];if(!op||!op.getAttribute("data-id"))return;fetch("https://servicodados.ibge.gov.br/api/v1/localidades/estados/"+op.getAttribute("data-id")+"/municipios?orderBy=nome").then(function(r){return r.json()}).then(function(l){cS.innerHTML='<option value="">Cidade</option>'+l.map(function(c){return '<option value="'+c.nome+'">'+c.nome+'</option>'}).join("")}).catch(function(){})};
+var tS=o.querySelector("#tpSel");if(tipoIni&&TP.indexOf(tipoIni)>=0)tS.value=tipoIni;var eS=o.querySelector("#esSel"),nv=o.querySelector("#esNovo");
+function lista(){fetch("/api/admin/estabelecimentos?tipo="+encodeURIComponent(tS.value)).then(function(r){return r.json()}).then(function(l){
+eS.innerHTML='<option value="">Sem estabelecimento</option><option value="novo">+ Criar novo</option>'+l.map(function(x){return '<option value="'+x.ref+'">'+e(x.nome)+(x.info?' - '+e(x.info):'')+'</option>'}).join("");nv.style.display="none"}).catch(function(){})}
+tS.onchange=lista;
+eS.onchange=function(){nv.style.display=eS.value==="novo"?"block":"none"};
+lista();
+o.querySelector("#tpNo").onclick=function(){o.remove()};
+o.querySelector("#tpOk").onclick=function(){
+var tp=tS.value,v=eS.value;
+if(v==="novo"){
+var fl=o.querySelector("#nFoto").files[0];
+function criar(foto){return fetch("/api/admin/estabelecimentos",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({tipo:tp,nome:o.querySelector("#nNome").value,cidade:(cS.value?cS.value+", "+uS.value:""),telefone:o.querySelector("#nTel").value,mapa:o.querySelector("#nMapa").value,foto:foto||null})})
+.then(function(r){return r.json()}).then(function(j){if(!j.ref){alert(j.erro||"Erro ao criar");return}o.remove();cb(tp,j.ref)})}
+if(fl){if(fl.size>5*1024*1024){alert("Foto maior que 5 MB");return}
+fetch("/api/admin/anuncios/imagem",{method:"POST",headers:{"Content-Type":fl.type},body:fl}).then(function(r){return r.json()}).then(function(j){if(!j.img){alert(j.erro||"Erro ao enviar foto");return}criar(j.img)})}else{criar(null)}
+}else{o.remove();cb(tp,v||null)}
+}}
+
 function dados(id,o){var tr=W.querySelector('tr[data-id="'+id+'"]');var x=L.filter(function(i){return String(i.id)===String(id)})[0];var b={status:x.status,valor:x.valor,vencimento:x.vencimento,pago:x.pago};if(tr){b.valor=tr.querySelector(".v").value;b.vencimento=tr.querySelector(".d").value||null;b.pago=tr.querySelector(".p").value;b.tipo=tr.querySelector(".t").value}else{b.tipo=x.tipo}for(var k in o)b[k]=o[k];return fetch("/api/admin/parceiros/"+id+"/dados",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b)}).then(carrega)}
 W.addEventListener("click",function(ev){var b=ev.target.closest("button[data-a]");if(!b)return;var id=b.getAttribute("data-id"),a=b.getAttribute("data-a");
 if(a==="del"){if(!confirm("Apagar este cadastro?"))return;fetch("/api/admin/parceiros/"+id+"/apagar",{method:"POST"}).then(carrega);return}
-if(a==="aut"){escolheTipo(function(tp){var d=new Date();d.setDate(d.getDate()+30);dados(id,{status:"autorizado",vencimento:iso(d),pago:"nao",tipo:tp})});return}
+if(a==="aut"){escolheTipo(function(tp,ref){var d=new Date();d.setDate(d.getDate()+30);dados(id,{status:"autorizado",vencimento:iso(d),pago:"nao",tipo:tp,estab:ref})});return}
 if(a==="cont"){dados(id,{status:"contatado"});return}
 if(a==="pend"){dados(id,{status:"novo"});return}
-if(a==="salvar"){dados(id,{});return}
+if(a==="estab"){var xx=L.filter(function(i){return String(i.id)===String(id)})[0];var trr=W.querySelector('tr[data-id="'+id+'"]');var tAtual=trr&&trr.querySelector(".t")?trr.querySelector(".t").value:(xx&&xx.tipo);escolheTipo(function(tp,ref){dados(id,{tipo:tp,estab:ref})},tAtual);return}if(a==="link"){fetch("/api/admin/parceiros/"+id+"/link",{method:"POST"}).then(function(r){return r.json()}).then(function(j){if(!j.link){alert(j.erro||"Erro ao gerar link");return}
+function mostra(){prompt("Copie o link (vale 7 dias, uso unico):",j.link)}
+if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(j.link).then(function(){alert("Link copiado! Envie ao dono do posto.\nVale 7 dias e so pode ser usado uma vez.")},mostra)}else{mostra()}})
+return}if(a==="salvar"){dados(id,{});return}
 if(a==="renova"){var x=L.filter(function(i){return String(i.id)===String(id)})[0];var base=(x.vencimento&&dias(x.vencimento)>0)?new Date(x.vencimento+"T00:00:00"):new Date();base.setDate(base.getDate()+30);dados(id,{vencimento:iso(base),pago:"nao"})}});
 carrega();
 })();

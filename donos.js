@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS invites(token TEXT PRIMARY KEY, name TEXT, email TEXT
 CREATE TABLE IF NOT EXISTS owners(user_id INTEGER PRIMARY KEY, paid_until TEXT, active INTEGER DEFAULT 1);
 `);
   try { db.exec('ALTER TABLE stations ADD COLUMN owner_id INTEGER'); } catch (e) {}
+  try { db.exec('ALTER TABLE invites ADD COLUMN station_id INTEGER'); } catch (e) {}
 
   const dia = (n) => new Date(Date.now() + n * 86400000).toISOString().slice(0, 10);
 
@@ -50,10 +51,27 @@ CREATE TABLE IF NOT EXISTS owners(user_id INTEGER PRIMARY KEY, paid_until TEXT, 
       .run(email, i.name, h.hashPw(password, salt), salt, 'owner').lastInsertRowid;
     db.prepare('INSERT INTO owners(user_id,paid_until) VALUES(?,?)').run(id, dia(i.days));
     db.prepare("UPDATE invites SET used_at=datetime('now'), user_id=? WHERE token=?").run(id, i.token);
+    if (i.station_id) db.prepare('UPDATE stations SET owner_id=? WHERE id=?').run(id, i.station_id);
     h.startSession(res, id);
     res.json({ ok: true });
   });
 
+  app.get('/editar', (req, res) => {
+    const i = db.prepare('SELECT * FROM invites WHERE token=? AND station_id IS NOT NULL').get(String(req.query.t || ''));
+    if (!i) return res.status(404).send('Link invalido.');
+    const email = 'posto' + i.station_id + '@link.local';
+    const u = db.prepare('SELECT id FROM users WHERE email=?').get(email);
+    let id;
+    if (u) id = u.id;
+    else {
+      const salt = crypto.randomBytes(16).toString('hex');
+      id = db.prepare('INSERT INTO users(email,name,hash,salt,role) VALUES(?,?,?,?,?)').run(email, i.name, h.hashPw(crypto.randomBytes(24).toString('hex'), salt), salt, 'owner').lastInsertRowid;
+      db.prepare('INSERT OR IGNORE INTO owners(user_id,paid_until) VALUES(?,?)').run(id, dia(i.days));
+    }
+    db.prepare('UPDATE stations SET owner_id=? WHERE id=?').run(id, i.station_id);
+    h.startSession(res, id);
+    res.redirect('/dono');
+  });
   app.post('/api/admin/donos/:id/data', h.requireAdmin, (req, res) => {
     const id = Number(req.params.id);
     const b = req.body || {};
