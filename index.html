@@ -213,7 +213,7 @@ fetch("/api/stations?city="+q).then(function(r){return r.json()}).then(function(
 function render(){
 var f=st.fuel,fn=f.toUpperCase();
 var rows=st.rows.map(function(s){var p=s.prices&&s.prices[f]!=null?s.prices[f]:null;
-return{s:s,p:p,d:st.pos?dist(st.pos[0],st.pos[1],s.lat,s.lng):null}}).sort(function(a,b){if(a.p!=null&&b.p!=null)return a.p-b.p;if(a.p!=null)return -1;if(b.p!=null)return 1;if(a.d!=null&&b.d!=null)return a.d-b.d;return String(a.s.name).localeCompare(String(b.s.name))}).slice(0,60);
+return{s:s,p:p,d:st.pos?dist(st.pos[0],st.pos[1],s.lat,s.lng):null}}).sort(function(a,b){if(a.p!=null&&b.p!=null)return a.p-b.p;if(a.p!=null)return -1;if(b.p!=null)return 1;if(!!a.s.foto!==!!b.s.foto)return a.s.foto?-1:1;if(a.d!=null&&b.d!=null)return a.d-b.d;return String(a.s.name).localeCompare(String(b.s.name))}).slice(0,60);
 var min=rows.length&&rows[0].p!=null?rows[0].p:-1;
 $("list").innerHTML=rows.length?rows.map(function(r){var s=r.s;
 var u="https://www.google.com/maps/dir/?api=1&destination="+s.lat+","+s.lng;
