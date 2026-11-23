@@ -217,7 +217,7 @@ return{s:s,p:p,d:st.pos?dist(st.pos[0],st.pos[1],s.lat,s.lng):null}}).sort(funct
 var min=rows.length&&rows[0].p!=null?rows[0].p:-1;
 $("list").innerHTML=rows.length?rows.map(function(r){var s=r.s;
 var u="https://www.google.com/maps/dir/?api=1&destination="+s.lat+","+s.lng;
-return '<div class="card'+(r.p!=null&&r.p===min?' best':'')+'"><div class="ic">⛽</div><div class="inf"><div class="n">'+s.name+(s.promo?'<span class="tag">Promo</span>':'')+'</div><div class="s">'+s.address+' · '+s.brand+(r.d!=null?' · '+r.d.toFixed(1).replace(".",",")+' km':'')+'</div><a href="'+u+'"'+(r.d!=null?' data-km="'+r.d.toFixed(1).replace(".",",")+' km"':'')+' target="_blank" rel="noopener">Como chegar →</a></div>'+(s.place_id?'<a class="est" href="/api/avaliar/'+s.id+'" target="_blank" rel="noopener" aria-label="Avaliar no Google"></a>':'')+'<div class="pr"><small>'+fn+'</small><b>'+(r.p!=null?brl(r.p):'Sem preço')+'</b></div></div>'}).join(""):'<p class="s">Nenhum posto cadastrado nesta cidade ainda.</p>';
+return '<div class="card'+(r.p!=null&&r.p===min?' best':'')+'"><div class="ic"'+(s.foto?' data-foto="'+s.foto+'" style="cursor:pointer"':'')+'>⛽</div><div class="inf"><div class="n">'+s.name+(s.promo?'<span class="tag">Promo</span>':'')+'</div><div class="s">'+s.address+' · '+s.brand+(r.d!=null?' · '+r.d.toFixed(1).replace(".",",")+' km':'')+'</div><a href="'+u+'"'+(r.d!=null?' data-km="'+r.d.toFixed(1).replace(".",",")+' km"':'')+' target="_blank" rel="noopener">Como chegar →</a></div>'+(s.place_id?'<a class="est" href="/api/avaliar/'+s.id+'" target="_blank" rel="noopener" aria-label="Avaliar no Google"></a>':'')+'<div class="pr"><small>'+fn+'</small><b>'+(r.p!=null?brl(r.p):'Sem preço')+'</b></div></div>'}).join(""):'<p class="s">Nenhum posto cadastrado nesta cidade ainda.</p>';
 $("fuels").innerHTML=FUELS.map(function(x){return '<button class="chip'+(x[1]===f?' on':'')+'" data-f="'+x[1]+'">'+x[0]+'</button>'}).join("");
 var pr=st.rows.filter(function(s){return s.promo});
 $("promos").innerHTML=pr.length?pr.map(function(s){return '<div class="card"><span class="badge">Promo</span><div class="inf"><div class="n">'+s.name+'</div><div class="s">'+s.address+'</div></div></div>'}).join(""):'<p class="s">Sem promoções nesta cidade.</p>'}
@@ -418,5 +418,6 @@ else msg(x.j.erro||"Erro ao enviar.","err")})
 .catch(function(){e.disabled=false;msg("Erro de conexão. Tente de novo.","err")})});
 })();
 </script>
+<script id="fotoPosto">document.addEventListener("click",function(e){var t=e.target.closest&&e.target.closest(".ic[data-foto]");if(!t)return;var f=t.getAttribute("data-foto");if(!/^uploads\/[a-f0-9]+\.(jpg|png|webp)$/.test(f))return;var o=document.createElement("div");o.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px";o.innerHTML='<img src="/'+f+'" style="max-width:100%;max-height:90vh;border-radius:16px"><button style="position:absolute;top:16px;right:16px;border:0;border-radius:99px;padding:10px 16px;font-weight:700;cursor:pointer">Fechar</button>';o.onclick=function(){o.remove()};document.body.appendChild(o)});</script>
 </body>
 </html>
